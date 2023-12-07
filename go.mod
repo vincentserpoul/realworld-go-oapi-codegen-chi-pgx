@@ -15,6 +15,7 @@ require (
 	github.com/induzo/gocom/shutdown v1.2.0
 	github.com/jackc/pgx/v5 v5.5.0
 	github.com/knadh/koanf/parsers/toml v0.1.0
+	github.com/knadh/koanf/providers/env v0.1.0
 	github.com/knadh/koanf/providers/file v0.1.0
 	github.com/knadh/koanf/v2 v2.0.1
 	github.com/lestrrat-go/jwx/v2 v2.0.18

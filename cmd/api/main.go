@@ -6,10 +6,12 @@ import (
 	"log"
 	"log/slog"
 	"os"
+	"strings"
 	"syscall"
 
 	"github.com/induzo/gocom/shutdown"
 	"github.com/knadh/koanf/parsers/toml"
+	"github.com/knadh/koanf/providers/env"
 	"github.com/knadh/koanf/providers/file"
 	"github.com/knadh/koanf/v2"
 
@@ -28,24 +30,14 @@ var (
 func main() {
 	mainCtx, mainStopCtx := context.WithCancel(context.Background())
 
-	konf := koanf.New(".")
-
-	if err := konf.Load(file.Provider("config/api/base.toml"), toml.Parser()); err != nil {
-		log.Fatalf("failed to load base config: %v", err)
-	}
-
-	env := "local"
+	environment := "local"
 	if os.Getenv("ENV") != "" {
-		env = os.Getenv("ENV")
+		environment = os.Getenv("ENV")
 	}
 
-	if err := konf.Load(file.Provider(fmt.Sprintf("config/api/%s.toml", env)), toml.Parser()); err != nil {
-		log.Fatalf("failed to load env config: %v", err)
-	}
-
-	cfg := &api.Config{}
-	if err := konf.Unmarshal("", &cfg); err != nil {
-		log.Fatalf("failed to unmarshal config: %v", err)
+	cfg, errC := parseConfig(environment)
+	if errC != nil {
+		log.Fatalf("failed to parse config: %v", errC)
 	}
 
 	logger := api.NewLogger(cfg.Log.Level, cfg.Log.IsPretty)
@@ -54,7 +46,7 @@ func main() {
 		cfg.Name,
 		slog.String("buildTime", BuildTime),
 		slog.String("commitHash", CommitHash),
-		slog.String("env", env),
+		slog.String("env", environment),
 	)
 
 	shutdownHandler := shutdown.New(logger)
@@ -102,4 +94,29 @@ func main() {
 	}
 
 	mainStopCtx()
+}
+
+func parseConfig(environment string) (*api.Config, error) {
+	konf := koanf.New(".")
+
+	if err := konf.Load(file.Provider("config/api/base.toml"), toml.Parser()); err != nil {
+		return nil, fmt.Errorf("failed to load base config: %w", err)
+	}
+
+	if err := konf.Load(file.Provider(fmt.Sprintf("config/api/%s.toml", environment)), toml.Parser()); err != nil {
+		return nil, fmt.Errorf("failed to load env config from toml: %w", err)
+	}
+
+	if err := konf.Load(env.Provider("", ".", func(s string) string {
+		return strings.Replace(strings.ToLower(strings.TrimPrefix(s, "")), "_", ".", -1) //nolint:gocritic // magic number
+	}), nil); err != nil {
+		return nil, fmt.Errorf("failed to load env config from ENV: %w", err)
+	}
+
+	cfg := &api.Config{}
+	if err := konf.Unmarshal("", &cfg); err != nil {
+		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
+	}
+
+	return cfg, nil
 }

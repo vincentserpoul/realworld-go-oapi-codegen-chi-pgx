@@ -1,20 +1,2 @@
-# this config is for your local environment
-withDebugProfiler = false
-
-[log]
-isPretty = true
-level = "debug"
-
 [observability.collector]
 host = "127.0.0.1"
-isSecure = false
-enableMetrics = false
-
-[http]
-port = 8_083
-
-[http.timeouts]
-readTimeout = "2s"
-readHeaderTimeout = "1s"
-writeTimeout = "2s"
-idleTimeout = "1m"

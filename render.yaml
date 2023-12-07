@@ -4,7 +4,7 @@ services:
     name: realworld
     runtime: image
     image:
-      url: ghcr.io/vincentserpoul/realworld-go-oapi-codegen-chi-pgx:v0.0.12
+      url: ghcr.io/vincentserpoul/realworld-go-oapi-codegen-chi-pgx:v0.0.14
     healthCheckPath: /sys/health
     envVars:
       - key: DATABASE_URL
