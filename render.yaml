@@ -5,7 +5,7 @@ services:
     region: singapore
     runtime: image
     image:
-      url: ghcr.io/vincentserpoul/realworld-go-oapi-codegen-chi-pgx:v0.0.14
+      url: ghcr.io/vincentserpoul/realworld-go-oapi-codegen-chi-pgx:v0.0.15
     healthCheckPath: /sys/health
     envVars:
       - key: DATABASE_URL
