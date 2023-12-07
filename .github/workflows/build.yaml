@@ -60,7 +60,7 @@ jobs:
           build-args: |
             BINARY_NAME=api
             LAST_MAIN_COMMIT_HASH=${{ github.sha }}
-            LAST_MAIN_COMMIT_DATE=$(git log main -n1 --format=%cd --date='iso-strict')
+            LAST_MAIN_COMMIT_DATE=${{ steps.getdate.outputs.LAST_MAIN_COMMIT_DATE }}
             GLOBAL_VAR_PKG="main"
 
       - name: Create Release
