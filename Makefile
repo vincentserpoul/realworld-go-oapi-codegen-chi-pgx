@@ -88,7 +88,6 @@ sec-vuln-scan: ## scan for vulnerability issues with govulncheck (govulncheck bi
 
 build-docker-api: TAG_NAME=$(API_NAME) ## docker build for api
 build-docker-api: BINARY_NAME="api"
-build-docker-api: GLOBAL_VAR_PKG="api"
 build-docker-api: build-docker-generic
 
 build-docker-generic:
@@ -100,9 +99,8 @@ build-docker-generic:
 		-t $(TAG_NAME) \
 		$$PLATFORM_FLAG \
 		--build-arg BINARY_NAME=$(BINARY_NAME) \
-		--build-arg GLOBAL_VAR_PKG=$(GLOBAL_VAR_PKG) \
+		--build-arg BUILD_TIME=$(shell date -u +"%Y-%m-%dT%H:%M:%SZ") \
 		--build-arg LAST_MAIN_COMMIT_HASH=$(shell git rev-parse --short HEAD) \
-		--build-arg LAST_MAIN_COMMIT_TIME=$(shell git log main -n1 --format='%cd' --date='iso-strict') \
 		--progress=plain \
 		--load \
 		./

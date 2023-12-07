@@ -19,6 +19,12 @@ import (
 	"realworld/internal/repository/db"
 )
 
+//nolint:gochecknoglobals // only allowed global vars - filled at build time - do not change
+var (
+	BuildTime  = "dev"
+	CommitHash = "dev"
+)
+
 func main() {
 	mainCtx, mainStopCtx := context.WithCancel(context.Background())
 
@@ -65,6 +71,12 @@ func main() {
 	if err := oapi.RegisterSvc(server, svc, cfg.Security.JWTSecret); err != nil {
 		log.Fatalf("failed to register svc: %v", err)
 	}
+
+	logger.Info(
+		cfg.Name,
+		slog.String("buildTime", BuildTime),
+		slog.String("commitHash", CommitHash),
+	)
 
 	if err := server.Serve(mainCtx); err != nil {
 		logger.Error(

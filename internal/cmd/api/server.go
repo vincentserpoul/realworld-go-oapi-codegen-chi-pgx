@@ -12,12 +12,6 @@ import (
 	"github.com/induzo/gocom/shutdown"
 )
 
-//nolint:gochecknoglobals // only allowed global vars - filled at build time - do not change
-var (
-	CommitTime = "dev"
-	CommitHash = "dev"
-)
-
 type ShutdownErrors []error
 
 func (e ShutdownErrors) Error() string {
@@ -83,12 +77,6 @@ func (s *Server) RegisterHTTPSvc(
 }
 
 func (s *Server) Serve(ctx context.Context) error {
-	s.logger.Info(
-		s.cfg.Name,
-		slog.String("commitTime", CommitTime),
-		slog.String("commitHash", CommitHash),
-	)
-
 	if err := s.startOtel(ctx); err != nil {
 		return fmt.Errorf("failed to start otel: %w", err)
 	}
