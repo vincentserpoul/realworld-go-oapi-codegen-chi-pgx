@@ -2,7 +2,6 @@ services:
   - type: web
     plan: starter
     name: realworld
-    region: singapore
     runtime: image
     image:
       url: ghcr.io/vincentserpoul/realworld-go-oapi-codegen-chi-pgx:v0.0.15
@@ -16,4 +15,3 @@ services:
         value: prod
 databases:
   - name: renderworld
-    region: singapore
