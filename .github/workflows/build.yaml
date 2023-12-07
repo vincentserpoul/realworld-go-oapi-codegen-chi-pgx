@@ -41,6 +41,9 @@ jobs:
         uses: docker/metadata-action@v5
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+      - name: Get last commit date
+        id: getdate
+        run: echo "::set-output name=date::$(git log -1 --format=%cd --date='iso-strict')"
       # This step uses the `docker/build-push-action` action to build the image, based on your repository's `Dockerfile`. If the build succeeds, it pushes the image to GitHub Packages.
       # It uses the `context` parameter to define the build's context as the set of files located in the specified path. For more information, see "[Usage](https://github.com/docker/build-push-action#usage)" in the README of the `docker/build-push-action` repository.
       # It uses the `tags` and `labels` parameters to tag and label the image with the output from the "meta" step.
@@ -54,6 +57,12 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+          build-args: |
+            BINARY_NAME=api
+            LAST_MAIN_COMMIT_HASH=${{ github.sha }}
+            LAST_MAIN_COMMIT_DATE=${{ steps.getdate.outputs.date }}
+            GLOBAL_VAR_PKG="main"
+
       - name: Create Release
         id: create_release
         uses: comnoco/create-release-action@v2.0.5
