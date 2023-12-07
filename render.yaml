@@ -1,7 +1,8 @@
 services:
   - type: web
     plan: starter
-    name: realworld
+    region: singapore
+    name: realworld-sgp
     runtime: image
     image:
       url: ghcr.io/vincentserpoul/realworld-go-oapi-codegen-chi-pgx:v0.0.17
@@ -9,9 +10,10 @@ services:
     envVars:
       - key: DATABASE_URL
         fromDatabase:
-          name: renderworld
+          name: renderworld-sgp
           property: connectionString
       - key: ENV
         value: prod
 databases:
-  - name: renderworld
+  - name: renderworld-sgp
+    region: singapore
