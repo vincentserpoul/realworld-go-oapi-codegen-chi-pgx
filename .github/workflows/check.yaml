@@ -28,6 +28,8 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
       - name: Conventional commit check
         uses: cocogitto/cocogitto-action@v3
+        with:
+          check-latest-tag-only: true
   lint:
     timeout-minutes: 15
     runs-on: ubuntu-latest
@@ -67,13 +69,13 @@ jobs:
         run: |
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $HOME/.local/bin ${{ env.TRIVY_VERSION }}
       - name: Run security scan with aquasecurity trivy
-        run: make trivy-scan
+        run: make sec-trivy-scan
       - name: Install govuln
         run: |
           go install golang.org/x/vuln/cmd/govulncheck@latest
       - name: Run security scan with govuln
         run: |
-          make vuln-scan
+          make sec-vuln-scan
   coveralls:
     timeout-minutes: 15
     runs-on: ubuntu-latest
