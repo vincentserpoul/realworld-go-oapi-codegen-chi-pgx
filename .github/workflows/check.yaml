@@ -76,6 +76,19 @@ jobs:
       - name: Run security scan with govuln
         run: |
           make sec-vuln-scan
+  tests:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GOLANG_VERSION }}
+          cache: true
+      - name: Run tests
+        run: make test
   coveralls:
     timeout-minutes: 15
     runs-on: ubuntu-latest
