@@ -17,4 +17,10 @@ For more information on how to this works with other frontends/backends, head ov
 
 # Getting started
 
-> npm install, npm start, etc.
+Install [pre-commit](https://pre-commit.com/)
+
+Setup pre-commit
+
+```bash
+pre-commit install -t commit-msg -t pre-commit -t pre-push
+```
