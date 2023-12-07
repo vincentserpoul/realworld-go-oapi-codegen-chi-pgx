@@ -1,4 +1,4 @@
-name = "realworld-go-std-sqlc-postgres-api"
+name = "realworld-go-oapi-codegen-chi-pgx"
 
 version = "v1"
 with_debug_profiler = false

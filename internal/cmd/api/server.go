@@ -38,7 +38,11 @@ type Server struct {
 }
 
 // NewServer in default, the server will serve grpc, swagger, http server
-func NewServer(cfg *Config, shutdownHandler *shutdown.Shutdown, logger *slog.Logger) (*Server, error) {
+func NewServer(
+	cfg *Config,
+	shutdownHandler *shutdown.Shutdown,
+	logger *slog.Logger,
+) (*Server, error) {
 	httpMgr, err := newHTTPManager(&cfg.HTTP, cfg.WithDebugProfiler)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http manager: %w", err)
@@ -76,11 +80,7 @@ func (s *Server) RegisterHTTPSvc(
 	return nil
 }
 
-func (s *Server) Serve(ctx context.Context) error {
-	if err := s.startOtel(ctx); err != nil {
-		return fmt.Errorf("failed to start otel: %w", err)
-	}
-
+func (s *Server) Serve() error {
 	if s.httpMgr != nil {
 		shutdownHTTP := s.httpMgr.startHTTPServer(s.logger)
 

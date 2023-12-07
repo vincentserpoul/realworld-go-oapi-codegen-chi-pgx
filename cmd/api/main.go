@@ -56,8 +56,13 @@ func main() {
 		log.Fatalf("failed to create api server: %v", err)
 	}
 
+	// start otel
+	if err := server.StartOtel(); err != nil {
+		log.Fatalf("failed to start otel: %v", err)
+	}
+
 	// add svc for open api
-	repo, errRep := db.NewRepository(mainCtx, cfg.DatabaseURL, logger)
+	repo, errRep := db.NewRepository(mainCtx, cfg.DatabaseURL)
 	if errRep != nil {
 		log.Fatalf("failed to initiate repository: %v", errRep)
 	}
@@ -69,7 +74,7 @@ func main() {
 		log.Fatalf("failed to register svc: %v", err)
 	}
 
-	if err := server.Serve(mainCtx); err != nil {
+	if err := server.Serve(); err != nil {
 		logger.Error(
 			"api serve failed with an error",
 			slog.Any("err", err),

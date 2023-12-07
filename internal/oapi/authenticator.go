@@ -9,9 +9,8 @@ import (
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/jwtauth/v5"
 	"github.com/gofrs/uuid/v5"
+	"github.com/induzo/gocom/http/middleware/writablecontext"
 	"github.com/lestrrat-go/jwx/v2/jwt"
-
-	"realworld/internal/oapi/writablecontext"
 )
 
 func NewAuthenticator(auth *jwtauth.JWTAuth) openapi3filter.AuthenticationFunc {

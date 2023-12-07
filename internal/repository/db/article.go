@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/induzo/gocom/database/pginit/v2"
 	"github.com/jackc/pgx/v5"
 
 	"realworld/internal/domain"
@@ -29,7 +30,7 @@ func (r *Repository) GetArticles(
 		return nil, fmt.Errorf("could not get articles: %w", errR)
 	}
 
-	articles, errA := pgx.CollectRows(rows, JSONRowToAddrOfStruct[domain.Article])
+	articles, errA := pgx.CollectRows(rows, pginit.JSONRowToAddrOfStruct[domain.Article])
 	if errA != nil {
 		return nil, fmt.Errorf("could not collect rows: %w", errA)
 	}
@@ -49,7 +50,7 @@ func (r *Repository) GetArticle(
 		return nil, fmt.Errorf("could not get article: %w", errR)
 	}
 
-	article, errA := pgx.CollectExactlyOneRow(rows, JSONRowToAddrOfStruct[domain.Article])
+	article, errA := pgx.CollectExactlyOneRow(rows, pginit.JSONRowToAddrOfStruct[domain.Article])
 	if errA != nil {
 		return nil, fmt.Errorf("could not collect rows: %w", errA)
 	}
@@ -70,7 +71,7 @@ func (r Repository) GetFeedArticles(
 		return nil, fmt.Errorf("could not get articles: %w", errR)
 	}
 
-	articles, errA := pgx.CollectRows(rows, JSONRowToAddrOfStruct[domain.Article])
+	articles, errA := pgx.CollectRows(rows, pginit.JSONRowToAddrOfStruct[domain.Article])
 	if errA != nil {
 		return nil, fmt.Errorf("could not collect rows: %w", errA)
 	}

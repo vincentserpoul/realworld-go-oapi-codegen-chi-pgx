@@ -5,12 +5,12 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/chi/v5"
+	"github.com/induzo/gocom/http/middleware/writablecontext"
 	middleware "github.com/oapi-codegen/nethttp-middleware"
 
 	"realworld/internal/cmd/api"
 	"realworld/internal/domain"
 	"realworld/internal/oapi/oapigen"
-	"realworld/internal/oapi/writablecontext"
 )
 
 func RegisterSvc(

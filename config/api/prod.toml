@@ -1,2 +1,4 @@
+env = "prod"
+
 [observability.collector]
 host = "127.0.0.1"

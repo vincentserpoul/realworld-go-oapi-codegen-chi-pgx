@@ -33,7 +33,7 @@ Forget your ORMs, this implementation is leveraging deepmap/oapi-codegen/v2, go-
 ```
 
 ```bash
-    make db-migration-local-up
+    make db-migration-up
 ```
 
 ```bash

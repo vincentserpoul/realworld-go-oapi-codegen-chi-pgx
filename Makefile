@@ -6,7 +6,7 @@
 		lint \
 		sec-scan sec-trivy-scan sec-vuln-scan \
 		build-docker-api build-docker-generic \
-		db-pg-init db-migration-local-up db-migration-local-down \
+		db-pg-init db-migration-up db-migration-down \
 		infra-local-up infra-local-down \
 		gci-format
 
@@ -122,13 +122,13 @@ db-pg-init: ## create users and passwords in postgres for your app
 	PGPASSWORD=$$DB_PASSWORD psql -h localhost -p $$DB_PORT -U postgres -f - \
 	)
 
-db-migration-local-up: ## migration up, using https://github.com/golang-migrate/migrate
+db-migration-up: ## migration up, using https://github.com/golang-migrate/migrate
 	@( \
 	printf "Enter database URL (for ex: postgres://postgres:localworld@localhost:5432/realworld?sslmode=disable): \n"; read -r DATABASE_URL &&\
 	migrate -database $${DATABASE_URL} -path database/migrations up; \
 	)
 
-db-migration-local-down: ## migration down
+db-migration-down: ## migration down
 	@( \
 	printf "Enter database URL (for ex: postgres://postgres:localworld@localhost:5432/realworld?sslmode=disable): \n"; read -r DATABASE_URL &&\
 	migrate -database $${DATABASE_URL} -path database/migrations down; \

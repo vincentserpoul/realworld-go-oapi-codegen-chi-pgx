@@ -3,17 +3,17 @@ package db
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"log/slog"
 	"time"
 
+	"github.com/exaring/otelpgx"
 	"github.com/induzo/gocom/database/pginit/v2"
 	"github.com/induzo/gocom/http/health"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
+	"go.opentelemetry.io/otel"
 
 	"realworld/internal/repository"
 )
@@ -33,14 +33,10 @@ type Repository struct {
 
 var ErrNilLogger = errors.New("logger is nil")
 
-func NewRepository(ctx context.Context, connString string, logger *slog.Logger) (*Repository, error) {
-	if logger == nil {
-		return nil, ErrNilLogger
-	}
-
+func NewRepository(ctx context.Context, connString string) (*Repository, error) {
 	pgi, err := pginit.New(
 		connString,
-		pginit.WithLogger(logger, "request-id"),
+		pginit.WithTracer(otelpgx.WithTracerProvider(otel.GetTracerProvider())),
 		pginit.WithDecimalType(),
 		pginit.WithUUIDType(),
 	)
@@ -78,21 +74,4 @@ func (r *Repository) GetHealthChecks() []health.CheckConfig {
 			Timeout: timeoutPing,
 		},
 	}
-}
-
-func JSONRowToAddrOfStruct[T any](row pgx.CollectableRow) (*T, error) {
-	var dest T
-
-	var jsonBytes []byte
-	// scan row into []byte
-	if pgxErr := row.Scan(&jsonBytes); pgxErr != nil {
-		return nil, fmt.Errorf("could not scan row: %w", pgxErr)
-	}
-
-	// unmarshal []byte into struct
-	if jsonErr := json.Unmarshal(jsonBytes, &dest); jsonErr != nil {
-		return nil, fmt.Errorf("could not unmarshal json: %w", jsonErr)
-	}
-
-	return &dest, nil
 }

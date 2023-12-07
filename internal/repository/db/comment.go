@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/induzo/gocom/database/pginit/v2"
 	"github.com/jackc/pgx/v5"
 
 	"realworld/internal/domain"
@@ -54,7 +55,7 @@ func (r *Repository) GetComments(
 		return nil, fmt.Errorf("could not get profile: %w", errR)
 	}
 
-	comments, errA := pgx.CollectRows(rows, JSONRowToAddrOfStruct[domain.Comment])
+	comments, errA := pgx.CollectRows(rows, pginit.JSONRowToAddrOfStruct[domain.Comment])
 	if errA != nil {
 		return nil, fmt.Errorf("could not collect row: %w", errA)
 	}
@@ -111,7 +112,7 @@ func (r *Repository) AddComment(
 		return nil, fmt.Errorf("could not insert comment: %w", err)
 	}
 
-	comment, errA := pgx.CollectExactlyOneRow(rows, JSONRowToAddrOfStruct[domain.Comment])
+	comment, errA := pgx.CollectExactlyOneRow(rows, pginit.JSONRowToAddrOfStruct[domain.Comment])
 	if errA != nil {
 		return nil, fmt.Errorf("could not insert comment: %w", errA)
 	}

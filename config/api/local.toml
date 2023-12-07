@@ -1,6 +1,7 @@
 # this config is for your local environment
 with_debug_profiler = true
 database_url = "postgres://postgres:localworld@localhost:5432/realworld?sslmode=disable"
+env = "local"
 
 [log]
 is_pretty = true

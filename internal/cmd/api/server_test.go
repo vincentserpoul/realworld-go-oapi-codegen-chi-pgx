@@ -90,7 +90,7 @@ func TestAPI_Start(t *testing.T) { //nolint: tparallel // disable because port c
 				shutdownHandler.Add(name, shutdownFunc)
 			}
 
-			if errS := srv.Serve(ctx); errS != nil {
+			if errS := srv.Serve(); errS != nil {
 				t.Errorf("api failed to start: %v", errS)
 
 				return

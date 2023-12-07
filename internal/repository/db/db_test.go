@@ -4,9 +4,7 @@ import (
 	"context"
 	"flag"
 	"fmt"
-	"io"
 	"log"
-	"log/slog"
 	"os"
 	"strings"
 	"testing"
@@ -20,14 +18,10 @@ import (
 	"realworld/database"
 )
 
-var (
-	logger *slog.Logger //nolint:gochecknoglobals // test code
-	dbURL  string       //nolint:gochecknoglobals // test code
-)
+var dbURL string //nolint:gochecknoglobals // test code
 
 func TestMain(m *testing.M) {
 	ctx := context.Background()
-	logger = slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{}))
 
 	postgresContainer, errR := postgres.RunContainer(
 		ctx,
@@ -80,7 +74,7 @@ func withRepo(tb testing.TB, dbName string) *Repository {
 	ctx := context.Background()
 
 	// create database
-	testrep, errC := NewRepository(ctx, dbURL, logger)
+	testrep, errC := NewRepository(ctx, dbURL)
 	if errC != nil {
 		log.Fatalf("could not connect to db: %v", errC)
 	}
@@ -96,7 +90,7 @@ func withRepo(tb testing.TB, dbName string) *Repository {
 		log.Fatalf("could not migrate: %v", err)
 	}
 
-	rep, errN := NewRepository(ctx, newDBURL, logger)
+	rep, errN := NewRepository(ctx, newDBURL)
 	if errN != nil {
 		log.Fatalf("could not connect to db: %v", errN)
 	}
