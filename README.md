@@ -1,3 +1,5 @@
+[![Coverage Status](https://coveralls.io/repos/github/vincentserpoul/realworld-go-oapi-codegen-chi-pgx/badge.svg?branch=main)](https://coveralls.io/github/vincentserpoul/realworld-go-oapi-codegen-chi-pgx?branch=main)
+
 # ![RealWorld Example App](logo.png)
 
 > ### codebase containing real world examples (CRUD, auth, advanced patterns, etc) that adheres to the [RealWorld](https://github.com/gothinkster/realworld) spec and API.
