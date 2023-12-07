@@ -1,0 +1,94 @@
+name: "check"
+
+on:
+  pull_request:
+  push:
+    branches:
+      - "main"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
+env:
+  GOLANG_VERSION: "1.21.5"
+  LINTER_VERSION: "v1.55.2"
+  TRIVY_VERSION: "v0.47.0"
+
+jobs:
+  check-conv-commits:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          # pick the pr HEAD instead of the merge commit
+          ref: ${{ github.event.pull_request.head.sha }}
+      - name: Conventional commit check
+        uses: cocogitto/cocogitto-action@v3
+  lint:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GOLANG_VERSION }}
+          cache: true
+      - name: Cache golangci-lint
+        id: golangci-lint
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.cache/golangci-lint
+          key: ${{ runner.os }}-golangci-lint
+      - name: Install golangci-lint
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $HOME/.local/bin ${{ env.LINTER_VERSION }}
+      - name: Lint all modules with golangci-lint
+        run: |
+          PATH=$PATH:$HOME/.local/bin make lint
+  sec-scan:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GOLANG_VERSION }}
+          cache: true
+      - name: Install trivy
+        run: |
+          curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $HOME/.local/bin ${{ env.TRIVY_VERSION }}
+      - name: Run security scan with aquasecurity trivy
+        run: make trivy-scan
+      - name: Install govuln
+        run: |
+          go install golang.org/x/vuln/cmd/govulncheck@latest
+      - name: Run security scan with govuln
+        run: |
+          make vuln-scan
+  coveralls:
+    timeout-minutes: 15
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Install Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: ${{ env.GOLANG_VERSION }}
+          cache: true
+      - name: Install goveralls
+        run: go install github.com/mattn/goveralls@latest
+      - name: Test and send coverage to coveralls
+        env:
+          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+        run: |
+          make test-coveralls

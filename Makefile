@@ -1,12 +1,21 @@
-.PHONY: all clean help deploy test test-race test-leak bench bench-compare bench-swagger-gen lint sec-scan vuln-scan upgrade release release-tag changelog-gen changelog-commit proto-gen proto-lint
+.PHONY: all clean \
+		help \
+		test test-race test-leak test-coverage-report test-coveralls \
+		bench bench-compare \
+		upgrade \
+		lint \
+		sec-scan sec-trivy-scan sec-vuln-scan \
+		build-docker-api build-docker-generic \
+		db-pg-init db-migration-local-up db-migration-local-down \
+		infra-local-up infra-local-down \
+		gci-format
 
 help: ## show this help
 	@awk 'BEGIN {FS = ":.*?## "} /^[a-zA-Z0-9_-]+:.*?## / {sub("\\\\n",sprintf("\n%22c"," "), $$2);printf "\033[36m%-25s\033[0m %s\n", $$1, $$2}' $(MAKEFILE_LIST)
 
 PROJECT_NAME?=realworld
 API_NAME?=$(PROJECT_NAME)-api
-MIGRATE_NAME?=$(PROJECT_NAME)-migrate
-ENV_LIST?=local localdev dev production
+
 
 SHELL = /bin/bash
 
@@ -30,6 +39,7 @@ test-coverage-report: ## test with coverage report
 test-coveralls:
 	go test -v ./... -race -leak -failfast -covermode=atomic -coverprofile=./coverage.out
 	goveralls -covermode=atomic -coverprofile=./coverage.out -repotoken=$(COVERALLS_TOKEN)
+
 
 #############
 # benchmark #
@@ -63,14 +73,39 @@ lint: ## lints the entire codebase
 # sec #
 #######
 
-sec-scan: trivy-scan vuln-scan ## scan for security and vulnerability issues
+sec-scan: sec-trivy-scan sec-vuln-scan ## scan for security and vulnerability issues
 
-trivy-scan: ## scan for sec issues with trivy (trivy binary needed)
+sec-trivy-scan: ## scan for sec issues with trivy (trivy binary needed)
 	trivy fs --exit-code 1 --no-progress --severity CRITICAL ./
 
-vuln-scan: ## scan for vulnerability issues with govulncheck (govulncheck binary needed)
+sec-vuln-scan: ## scan for vulnerability issues with govulncheck (govulncheck binary needed)
 	govulncheck ./...
 
+
+#########
+# build #
+#########
+
+build-docker-api: TAG_NAME=$(API_NAME) ## docker build for api
+build-docker-api: BINARY_NAME="api"
+build-docker-api: GLOBAL_VAR_PKG="api"
+build-docker-api: build-docker-generic
+
+build-docker-generic:
+	if [[ -n "${PLATFORM}" ]]; then \
+		PLATFORM_FLAG="--platform ${PLATFORM}"; \
+	fi; \
+	docker buildx build \
+		-f Dockerfile \
+		-t $(TAG_NAME) \
+		$$PLATFORM_FLAG \
+		--build-arg BINARY_NAME=$(BINARY_NAME) \
+		--build-arg GLOBAL_VAR_PKG=$(GLOBAL_VAR_PKG) \
+		--build-arg LAST_MAIN_COMMIT_HASH=$(shell git rev-parse --short HEAD) \
+		--build-arg LAST_MAIN_COMMIT_TIME=$(shell git log main -n1 --format='%cd' --date='iso-strict') \
+		--progress=plain \
+		--load \
+		./
 
 ######
 # db #
