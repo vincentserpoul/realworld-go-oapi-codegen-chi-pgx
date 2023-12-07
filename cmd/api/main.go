@@ -108,7 +108,7 @@ func parseConfig(environment string) (*api.Config, error) {
 	}
 
 	if err := konf.Load(env.Provider("", ".", func(s string) string {
-		return strings.Replace(strings.ToLower(strings.TrimPrefix(s, "")), "_", ".", -1) //nolint:gocritic // magic number
+		return strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(s, "")), "__", ".")
 	}), nil); err != nil {
 		return nil, fmt.Errorf("failed to load env config from ENV: %w", err)
 	}
