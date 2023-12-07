@@ -1,0 +1,54 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realworld-go-std-sqlc-postgres-api
+  labels:
+    app.kubernetes.io/name: realworld-go-std-sqlc-postgres-api
+    app.kubernetes.io/instance: api
+  annotations:
+    app-containers: api
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: realworld-go-std-sqlc-postgres-api
+      app.kubernetes.io/instance: api
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxUnavailable: 0
+      maxSurge: 1
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: realworld-go-std-sqlc-postgres-api
+        app.kubernetes.io/instance: api
+    spec:
+      containers:
+        - name: api
+          image: realworld-go-std-sqlc-postgres-api
+          imagePullPolicy: IfNotPresent
+          resources:
+            requests:
+              cpu: 100m
+              memory: 100Mi
+            limits:
+              cpu: 100m
+              memory: 100Mi
+          livenessProbe:
+            httpGet:
+              path: /sys/health
+              port: 8000
+            initialDelaySeconds: 3
+            timeoutSeconds: 5
+            failureThreshold: 4
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /sys/health
+              port: 8000
+            initialDelaySeconds: 3
+            timeoutSeconds: 5
+            failureThreshold: 4
+            periodSeconds: 30

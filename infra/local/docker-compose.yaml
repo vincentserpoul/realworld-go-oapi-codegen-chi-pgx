@@ -1,0 +1,29 @@
+version: '3'
+services:
+  # postgres
+  lp-postgres:
+    image: postgres:latest
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: localworld
+      POSTGRES_DB: realworld
+    ports:
+      - '5432:5432'
+  jaegertracing-all-in-one:
+    image: jaegertracing/all-in-one:1.51
+    restart: always
+    ports:
+      - '14250:14250'
+      - '16686:16686'
+  otel-collector:
+    image: otel/opentelemetry-collector:latest
+    restart: always
+    ports:
+      - '4317:4317'
+    environment:
+      - OTEL_EXPORTERS=otlp
+      - OTEL_EXPORTER_OTLP_ENDPOINT=jaegertracing-all-in-one:14250
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=jaegertracing-all-in-one:14250
+      - OTEL_EXPORTER_OTLP_SPAN_TIMEOUT=5s
+      - OTEL_SERVICE_NAME=realworld

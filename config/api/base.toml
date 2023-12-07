@@ -1,0 +1,24 @@
+name = "realworld-go-std-sqlc-postgres-api"
+
+version = "v1"
+withDebugProfiler = false
+
+[log]
+isPretty = false
+level = "error"
+
+[observability.collector]
+host = "otlp.nr-data.net"
+port = 4_317
+isSecure = true
+enableMetrics = true
+
+[http]
+port = 8_083
+healthEndpoint = "/sys/health"
+
+[http.timeouts]
+readTimeout = "2s"
+readHeaderTimeout = "1s"
+writeTimeout = "2s"
+idleTimeout = "1m"

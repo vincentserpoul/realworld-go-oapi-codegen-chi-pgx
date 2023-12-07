@@ -1,0 +1,15 @@
+.dockerignore
+benchmarks/
+target/
+Dockerfile*
+Makefile
+.golangci.toml
+cliff.toml
+cog.toml
+bench.txt
+
+deploy/
+
+.github_personal_access_token
+*.sed.sql
+openapi/

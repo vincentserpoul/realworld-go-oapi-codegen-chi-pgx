@@ -1,0 +1,4 @@
+package: oapigen
+generate:
+  models: true
+output: ./types.gen.go

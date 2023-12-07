@@ -1,0 +1,18 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: realworld-go-std-sqlc-postgres-api
+spec:
+  replicas: 1
+  template:
+    spec:
+      containers:
+        - name: api
+          imagePullPolicy: IfNotPresent
+          image: realworld-go-std-sqlc-postgres-api:latest
+          env:
+            - name: ENV
+              value: localdev
+      nodeSelector:
+      volumes:
+      serviceAccountName:

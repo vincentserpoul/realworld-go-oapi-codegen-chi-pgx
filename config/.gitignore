@@ -1,0 +1,7 @@
+*.yaml
+!base.yaml
+!local.yaml
+!localdev.yaml
+!dev.yaml
+!staging.yaml
+!production.yaml

@@ -1,0 +1,26 @@
+# this config is for your local environment
+withDebugProfiler = true
+databaseURL = "postgres://postgres:localworld@localhost:5432/realworld?sslmode=disable"
+
+[log]
+isPretty = true
+level = "info"
+
+[observability.collector]
+host = "127.0.0.1"
+isSecure = false
+enableMetrics = false
+
+[http]
+port = 8_083
+
+[http.timeouts]
+readTimeout = "2s"
+readHeaderTimeout = "1s"
+writeTimeout = "2s"
+idleTimeout = "1m"
+
+[security]
+jwtSecret = "secret"
+
+databaseURL = "postgres://postgres:localworld@localhost:5432/realworld?sslmode=disable"

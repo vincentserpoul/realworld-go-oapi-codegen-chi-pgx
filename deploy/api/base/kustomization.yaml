@@ -1,0 +1,10 @@
+resources:
+  - deployment.yaml
+
+namespace: realworld
+
+commonLabels:
+  app.kubernetes.io/name: realworld-go-std-sqlc-postgres-api
+
+commonAnnotations:
+  linkerd.io/inject: enabled
