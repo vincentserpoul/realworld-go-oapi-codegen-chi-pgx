@@ -1,4 +1,4 @@
-[![Coverage Status](https://coveralls.io/repos/github/vincentserpoul/realworld-go-oapi-codegen-chi-pgx/badge.svg?branch=main)](https://coveralls.io/github/vincentserpoul/realworld-go-oapi-codegen-chi-pgx?branch=main)
+[![checks](https://github.com/vincentserpoul/realworld-go-oapi-codegen-chi-pgx/actions/workflows/check.yml/badge.svg)](https://github.com/vincentserpoul/realworld-go-oapi-codegen-chi-pgx/actions/workflows/checks.yml) [![build](https://github.com/vincentserpoul/realworld-go-oapi-codegen-chi-pgx/actions/workflows/check.yml/badge.svg)](https://github.com/vincentserpoul/realworld-go-oapi-codegen-chi-pgx/actions/workflows/build.yml) [![Coverage Status](https://coveralls.io/repos/github/vincentserpoul/realworld-go-oapi-codegen-chi-pgx/badge.svg?branch=main)](https://coveralls.io/github/vincentserpoul/realworld-go-oapi-codegen-chi-pgx?branch=main)
 
 # ![RealWorld Example App](logo.png)
 
@@ -15,9 +15,23 @@ For more information on how to this works with other frontends/backends, head ov
 
 # How it works
 
-> Describe the general architecture of your app here
+Forget your ORMs, this implementation is leveraging deepmap/oapi-codegen/v2, go-chi/v5 and pgx/v5.
 
 # Getting started
+
+```bash
+    make infra-local-up
+```
+
+```bash
+    make db-migration-local-up
+```
+
+```bash
+    go run cmd/api/main.go
+```
+
+# Contributing
 
 Install [pre-commit](https://pre-commit.com/)
 
