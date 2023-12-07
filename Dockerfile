@@ -2,7 +2,7 @@
 # BUILDER #
 ###########
 
-FROM --platform=${BUILDPLATFORM} golang:1.21.4 AS builder
+FROM --platform=${BUILDPLATFORM} golang:1.21.5 AS builder
 
 WORKDIR /src
 
