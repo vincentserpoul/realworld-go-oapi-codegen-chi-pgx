@@ -62,6 +62,14 @@ func TestRepository_AddComment(t *testing.T) {
 				},
 			},
 		},
+		{
+			name: "add comment to a non existing article",
+			args: args{
+				slug: "non ex",
+				body: "I like this article",
+			},
+			wantErr: true,
+		},
 	}
 
 	for _, tt := range tests {
@@ -72,6 +80,10 @@ func TestRepository_AddComment(t *testing.T) {
 			got, err := testrep.AddComment(context.Background(), usr.ID, tt.args.slug, tt.args.body)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.AddComment() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+
+			if tt.wantErr {
 				return
 			}
 
