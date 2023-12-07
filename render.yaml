@@ -1,0 +1,17 @@
+services:
+  - type: web
+    plan: free
+    name: realworld
+    runtime: image
+    image:
+      url: ghcr.io/vincentserpoul/realworld-go-oapi-codegen-chi-pgx:v0.0.12
+    healthCheckPath: /sys/health
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: elephant
+          property: connectionString
+databases:
+  - name: renderworld
+    type: postgresql
+    version: "15"
