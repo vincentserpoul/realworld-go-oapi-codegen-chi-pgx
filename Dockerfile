@@ -30,10 +30,10 @@ FROM gcr.io/distroless/cc-debian12:nonroot
 
 ARG BINARY_NAME
 
-COPY ./config/${BINARY_NAME} /config/${BINARY_NAME}
+COPY --chown=nonroot:nonroot ./config/${BINARY_NAME} /home/nonroot/config/${BINARY_NAME}
 
-COPY --from=builder /app /app
+COPY --chown=nonroot:nonroot --from=builder /app /home/nonroot/app
 
 USER nonroot
 
-CMD ["/app"]
+CMD ["/home/nonroot/app"]

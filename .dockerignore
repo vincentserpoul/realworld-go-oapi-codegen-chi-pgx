@@ -11,5 +11,3 @@ bench.txt
 deploy/
 
 .github_personal_access_token
-*.sed.sql
-openapi/
