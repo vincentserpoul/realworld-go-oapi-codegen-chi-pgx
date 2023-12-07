@@ -50,7 +50,12 @@ func main() {
 
 	logger := api.NewLogger(cfg.Log.Level, cfg.Log.IsPretty)
 
-	logger.Info("loaded env config", slog.String("env", env))
+	logger.Info(
+		cfg.Name,
+		slog.String("buildTime", BuildTime),
+		slog.String("commitHash", CommitHash),
+		slog.String("env", env),
+	)
 
 	shutdownHandler := shutdown.New(logger)
 
@@ -71,12 +76,6 @@ func main() {
 	if err := oapi.RegisterSvc(server, svc, cfg.Security.JWTSecret); err != nil {
 		log.Fatalf("failed to register svc: %v", err)
 	}
-
-	logger.Info(
-		cfg.Name,
-		slog.String("buildTime", BuildTime),
-		slog.String("commitHash", CommitHash),
-	)
 
 	if err := server.Serve(mainCtx); err != nil {
 		logger.Error(
