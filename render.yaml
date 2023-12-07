@@ -1,6 +1,6 @@
 services:
   - type: web
-    plan: free
+    plan: starter
     name: realworld
     runtime: image
     image:
@@ -11,7 +11,7 @@ services:
         fromDatabase:
           name: elephant
           property: connectionString
+      - key: ENV
+        value: prod
 databases:
   - name: renderworld
-    type: postgresql
-    version: "15"
