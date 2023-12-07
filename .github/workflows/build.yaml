@@ -60,15 +60,12 @@ jobs:
             LAST_MAIN_COMMIT_HASH=${{ github.sha }}
             GLOBAL_VAR_PKG="main"
 
-      - name: Create Release
-        id: create_release
-        uses: comnoco/create-release-action@v2.0.5
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # This token is provided by Actions, you do not need to create your own token
+      - name: Generate a changelog
+        uses: orhun/git-cliff-action@v2
+        id: git-cliff
         with:
-          tag_name: ${{ github.ref }}
-          release_name: ${{ github.ref }}
-          body: |
-            Updated Docker image
-          draft: false
-          prerelease: false
+          args: --latest
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          body: ${{steps.git-cliff.outputs.content}}

@@ -19,6 +19,15 @@ Forget your ORMs, this implementation is leveraging deepmap/oapi-codegen/v2, go-
 
 # Getting started
 
+## What you need
+
+- [migrate](https://github.com/golang-migrate/migrate)
+- [docker compose](https://docs.docker.com/compose/)
+- [go](https://go.dev)
+- [golangci-lint](https://golangci-lint.run/)
+
+## Run
+
 ```bash
     make infra-local-up
 ```
