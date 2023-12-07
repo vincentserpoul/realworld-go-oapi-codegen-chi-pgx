@@ -8,6 +8,7 @@ WORKDIR /src
 
 COPY . .
 
+
 ARG BINARY_NAME
 ARG TARGETOS TARGETARCH
 ARG BUILD_TIME LAST_MAIN_COMMIT_HASH
@@ -15,7 +16,7 @@ ARG BUILD_TIME LAST_MAIN_COMMIT_HASH
 ENV FLAG="-X main.BuildTime=${BUILD_TIME}"
 ENV FLAG="$FLAG -X main.CommitHash=${LAST_MAIN_COMMIT_HASH}"
 
-ENV GOCACHE=/root/.cache/go-build
+RUN --mount=type=cache,target=/go/pkg/mod go mod download
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
     --mount=type=cache,target=/go/pkg/mod \
