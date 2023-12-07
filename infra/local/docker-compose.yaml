@@ -17,3 +17,13 @@ services:
       - '14250:14250'
       - '16686:16686'
       - '4317:4317'
+
+  # openobserve:
+  #   image: public.ecr.aws/zinclabs/openobserve:latest
+  #   restart: always
+  #   ports:
+  #     - '5080:5080'
+  #   environment:
+  #     ZO_DATA_DIR: /data
+  #     ZO_ROOT_USER_EMAIL: test@po.com
+  #     ZO_ROOT_USER_PASSWORD: test

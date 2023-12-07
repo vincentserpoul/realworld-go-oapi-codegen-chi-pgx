@@ -14,7 +14,6 @@ func (s *Server) StartOtel() error {
 		otelconfig.WithServiceVersion(s.cfg.Version),
 		// otelconfig.WithHeaders(map[string]string{
 		// 	"service-auth-key":     "value",
-		// 	"service-useful-field": "testing",
 		// }),
 		otelconfig.WithExporterEndpoint(
 			fmt.Sprintf("%s:%d", s.cfg.Observability.Collector.Host, s.cfg.Observability.Collector.Port),
