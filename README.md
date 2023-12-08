@@ -26,6 +26,16 @@ Forget your ORMs, this implementation is leveraging deepmap/oapi-codegen/v2, go-
 - [go](https://go.dev)
 - [golangci-lint](https://golangci-lint.run/)
 
+## Setting up the config
+
+Copy the content of config/api/secrets.sample.yaml to config/api/local.secrets.yaml
+
+### Enabling otel traces
+
+Just go to 127.0.0.1:5080, log in with the credentials you find in infra/local/docker-compose.yaml.
+Then press the tab "ingestion" and look into the Authorization header key.
+Update the header in the file you just created (config/api/local.secrets.yaml).
+
 ## Run
 
 ```bash
@@ -40,15 +50,9 @@ Forget your ORMs, this implementation is leveraging deepmap/oapi-codegen/v2, go-
     go run cmd/api/main.go
 ```
 
-### Enabling otel traces
-
-Just go to 127.0.0.1:5080, tab "ingestion" and look into the Authorization header key
-
 # Contributing
 
-Install [pre-commit](https://pre-commit.com/)
-
-Setup pre-commit
+Make sure you install [pre-commit](https://pre-commit.com/) and set it up as following:
 
 ```bash
 pre-commit install -t commit-msg -t pre-commit -t pre-push
