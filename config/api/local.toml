@@ -10,5 +10,6 @@ level = "debug"
 
 [observability.collector]
 host = "127.0.0.1"
+port = 5_080
 is_insecure = true
 with_metrics_enabled = false
