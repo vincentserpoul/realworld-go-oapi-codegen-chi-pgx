@@ -50,6 +50,20 @@ Just go to 127.0.0.1:5080, log in with the credentials you find in infra/local/d
 Then press the tab "ingestion" and look into the Authorization header key.
 Update the header in the file you just created (config/api/local.secrets.yaml) and restart!
 
+## Running the test suite
+
+After all the setup is done, in one terminal, run:
+
+```bash
+go run ./cmd/api/main.go
+```
+
+and in another, you run:
+
+```bash
+APIURL=http://localhost:8083 ./api/run-api-tests.sh
+```
+
 ## Contributing
 
 Make sure you install [pre-commit](https://pre-commit.com/) and set it up as following:
