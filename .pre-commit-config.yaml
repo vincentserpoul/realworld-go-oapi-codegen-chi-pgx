@@ -24,8 +24,13 @@ repos:
   hooks:
   - id: detect-secrets
     args: ['--baseline', '.secrets.baseline']
-- repo: https://github.com/golangci/golangci-lint
-  rev: v1.55.2
+- repo: https://github.com/dnephin/pre-commit-golang
+  rev: master
   hooks:
-  - id: golangci-lint
-    args: [--config=./.golangci.toml]
+    - id: no-go-testing
+    - id: golangci-lint
+      args: [--config=./.golangci.toml]
+    - id: go-critic
+    - id: go-unit-tests
+    - id: go-build
+    - id: go-mod-tidy
