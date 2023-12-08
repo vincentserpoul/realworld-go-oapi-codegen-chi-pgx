@@ -2,18 +2,12 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"log"
 	"log/slog"
 	"os"
-	"strings"
 	"syscall"
 
 	"github.com/induzo/gocom/shutdown"
-	"github.com/knadh/koanf/parsers/toml"
-	"github.com/knadh/koanf/providers/env"
-	"github.com/knadh/koanf/providers/file"
-	"github.com/knadh/koanf/v2"
 
 	"realworld/internal/cmd/api"
 	"realworld/internal/domain"
@@ -35,7 +29,7 @@ func main() {
 		environment = os.Getenv("ENV")
 	}
 
-	cfg, errC := parseConfig(environment)
+	cfg, errC := api.ParseConfig(environment)
 	if errC != nil {
 		log.Fatalf("failed to parse config: %v", errC)
 	}
@@ -99,29 +93,4 @@ func main() {
 	}
 
 	mainStopCtx()
-}
-
-func parseConfig(environment string) (*api.Config, error) {
-	konf := koanf.New(".")
-
-	if err := konf.Load(file.Provider("config/api/base.toml"), toml.Parser()); err != nil {
-		return nil, fmt.Errorf("failed to load base config: %w", err)
-	}
-
-	if err := konf.Load(file.Provider(fmt.Sprintf("config/api/%s.toml", environment)), toml.Parser()); err != nil {
-		return nil, fmt.Errorf("failed to load env config from toml: %w", err)
-	}
-
-	if err := konf.Load(env.Provider("", ".", func(s string) string {
-		return strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(s, "")), "__", ".")
-	}), nil); err != nil {
-		return nil, fmt.Errorf("failed to load env config from ENV: %w", err)
-	}
-
-	cfg := &api.Config{}
-	if err := konf.Unmarshal("", &cfg); err != nil {
-		return nil, fmt.Errorf("failed to unmarshal config: %w", err)
-	}
-
-	return cfg, nil
 }

@@ -40,6 +40,10 @@ Forget your ORMs, this implementation is leveraging deepmap/oapi-codegen/v2, go-
     go run cmd/api/main.go
 ```
 
+### Enabling otel traces
+
+Just go to 127.0.0.1:5080, tab "ingestion" and look into the Authorization header key
+
 # Contributing
 
 Install [pre-commit](https://pre-commit.com/)

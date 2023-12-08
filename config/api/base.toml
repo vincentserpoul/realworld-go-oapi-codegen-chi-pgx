@@ -3,15 +3,15 @@ name = "realworld-go-oapi-codegen-chi-pgx"
 version = "v1"
 with_debug_profiler = false
 
+secrets_path = "config/api/base.secrets.toml" # pragma: allowlist secret
+
 [log]
 is_pretty = false
 level = "error"
 
 [observability.collector]
-host = "otlp.nr-data.net"
+host = "127.0.0.1"
 port = 4_317
-is_secure = true
-enable_metrics = true
 
 [http]
 port = 8_083

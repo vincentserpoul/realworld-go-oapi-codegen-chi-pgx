@@ -52,3 +52,4 @@ bench.txt
 
 # secrets
 .coveralls-repo-token
+infra/local/data

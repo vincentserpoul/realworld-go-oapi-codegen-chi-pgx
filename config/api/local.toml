@@ -1,7 +1,8 @@
 # this config is for your local environment
 with_debug_profiler = true
-database_url = "postgres://postgres:localworld@localhost:5432/realworld?sslmode=disable"
 env = "local"
+
+secrets_path = "config/api/local.secrets.toml" # pragma: allowlist secret
 
 [log]
 is_pretty = true
@@ -9,8 +10,5 @@ level = "debug"
 
 [observability.collector]
 host = "127.0.0.1"
-is_secure = false
-enable_metrics = false
-
-[security]
-jwt_secret = "secret"
+is_insecure = true
+with_metrics_enabled = false

@@ -1,4 +1,6 @@
 env = "prod"
 
+secrets_path = "config/api/prod.secrets.toml" # pragma: allowlist secret
+
 [observability.collector]
 host = "127.0.0.1"
