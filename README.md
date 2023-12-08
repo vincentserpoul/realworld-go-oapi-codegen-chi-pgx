@@ -21,7 +21,7 @@ Forget your ORMs, this implementation is leveraging deepmap/oapi-codegen/v2, go-
 
 ## What you need
 
-- [migrate](https://github.com/golang-migrate/migrate)
+- [migrate](https://github.com/golang-migrate/migrate/tree/master/cmd/migrate)
 - [docker compose](https://docs.docker.com/compose/)
 - [go](https://go.dev)
 - [golangci-lint](https://golangci-lint.run/)
