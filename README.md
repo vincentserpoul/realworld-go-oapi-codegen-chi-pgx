@@ -44,12 +44,6 @@ Copy the content of config/api/secrets.sample.yaml to config/api/local.secrets.y
     go run cmd/api/main.go
 ```
 
-## Enabling otel traces
-
-Just go to 127.0.0.1:5080, log in with the credentials you find in infra/local/docker-compose.yaml.
-Then press the tab "ingestion" and look into the Authorization header key.
-Update the header in the file you just created (config/api/local.secrets.yaml) and restart!
-
 ## Running the test suite
 
 After all the setup is done, in one terminal, run:
@@ -63,6 +57,12 @@ and in another, you run:
 ```bash
 APIURL=http://localhost:8083 ./api/run-api-tests.sh
 ```
+
+
+## Enabling otel traces
+
+Follow the (README)[infra/local/README.md].
+
 
 ## Contributing
 

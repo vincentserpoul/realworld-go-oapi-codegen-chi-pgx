@@ -1,0 +1,39 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+
+exporters:
+  otlp/jaeger:
+    endpoint: jaegertracing-all-in-one:4317
+    tls:
+      insecure: true
+
+  otlphttp/openobserve:
+    endpoint: http://openobserve:5080/api/default
+    headers:
+      Authorization: "Basic HEADER_TOKEN_TO_BE_REPLACED"
+    tls:
+      insecure: true
+
+processors:
+  batch:
+
+extensions:
+  health_check:
+  pprof:
+    endpoint: :1888
+  zpages:
+    endpoint: :55679
+
+service:
+  extensions: [pprof, zpages, health_check]
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/openobserve]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [otlphttp/openobserve]

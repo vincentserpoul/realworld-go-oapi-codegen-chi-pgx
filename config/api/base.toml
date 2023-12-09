@@ -10,7 +10,7 @@ is_pretty = false
 level = "error"
 
 [observability.collector]
-host = "127.0.0.1"
+host = "localhost"
 port = 4_317
 
 [http]

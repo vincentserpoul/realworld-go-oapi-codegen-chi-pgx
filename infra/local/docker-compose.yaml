@@ -16,6 +16,7 @@ services:
     restart: always
     ports:
       - '5080:5080'
+      - '5081:5081'
     volumes:
       - type: bind
         source: ./data
@@ -24,3 +25,14 @@ services:
       ZO_DATA_DIR: /data
       ZO_ROOT_USER_EMAIL: test@po.com
       ZO_ROOT_USER_PASSWORD: test # pragma: allowlist secret
+  # collector
+  otel-collector:
+    image: otel/opentelemetry-collector:0.90.1
+    restart: always
+    ports:
+      - '4317:4317'
+    volumes:
+      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
+    command: ["--config", "/etc/otel-collector-config.yaml"]
+    depends_on:
+      - openobserve
