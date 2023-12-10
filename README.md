@@ -66,8 +66,13 @@ Follow the (README)[infra/local/README.md].
 
 ## Contributing
 
+### Pre commit hooks
+
 Make sure you install [pre-commit](https://pre-commit.com/) and set it up as following:
 
 ```bash
 pre-commit install -t commit-msg -t pre-commit -t pre-push
 ```
+### Signed commits
+
+Make sure you sign your commits, you can check how to (here)[https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification#ssh-commit-signature-verification] and (here)[https://www.git-tower.com/blog/setting-up-ssh-for-commit-signing/]
