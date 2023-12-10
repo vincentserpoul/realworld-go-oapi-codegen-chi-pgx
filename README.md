@@ -75,4 +75,4 @@ pre-commit install -t commit-msg -t pre-commit -t pre-push
 ```
 ### Signed commits
 
-Make sure you sign your commits, you can check how to (here)[https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification#ssh-commit-signature-verification] and (here)[https://www.git-tower.com/blog/setting-up-ssh-for-commit-signing/]
+IF you want to sign your commits, you can check how to [here](https://docs.github.com/en/authentication/managing-commit-signature-verification/about-commit-signature-verification#ssh-commit-signature-verification) and [here](https://www.git-tower.com/blog/setting-up-ssh-for-commit-signing/) and [here](https://calebhearth.com/sign-git-with-ssh).
