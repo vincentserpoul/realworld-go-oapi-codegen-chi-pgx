@@ -150,3 +150,10 @@ infra-local-down: ## remoave local infra
 
 gci-format: ## format repo through gci linter
 	gci write ./ --skip-generated -s standard -s default -s "Prefix(realworld)"
+
+############
+# Generate #
+############
+
+generate: ## generate code
+	go generate ./...
