@@ -3,8 +3,6 @@ name = "realworld-go-oapi-codegen-chi-pgx"
 version = "v1"
 with_debug_profiler = false
 
-secrets_path = "config/api/base.secrets.toml" # pragma: allowlist secret
-
 [log]
 is_pretty = false
 level = "error"

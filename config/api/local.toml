@@ -7,3 +7,6 @@ secrets_path = "config/api/local.secrets.toml" # pragma: allowlist secret
 [log]
 is_pretty = true
 level = "debug"
+
+[observability.collector]
+is_insecure = true
