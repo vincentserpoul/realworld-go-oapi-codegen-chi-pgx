@@ -10,8 +10,10 @@ CREATE TABLE article(
     FOREIGN KEY (author_id) REFERENCES appuser(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+-- create index for author_id
+CREATE INDEX article_author_id_idx ON article(author_id);
+
 CREATE TABLE comment(
-    -- int auto incremental primary key
     id int PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     body text NOT NULL,
     article_id uuid NOT NULL,
@@ -21,6 +23,12 @@ CREATE TABLE comment(
     FOREIGN KEY (article_id) REFERENCES article(id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (author_id) REFERENCES appuser(id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
+-- create index for article_id
+CREATE INDEX comment_article_id_idx ON comment(article_id);
+
+-- create index for author_id
+CREATE INDEX comment_author_id_idx ON comment(author_id);
 
 CREATE TABLE tag(
     id uuid PRIMARY KEY,
