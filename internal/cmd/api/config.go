@@ -74,6 +74,12 @@ func ParseConfig(environment string) (*Config, error) {
 		return nil, fmt.Errorf("failed to load env config from toml: %w", err)
 	}
 
+	if err := konf.Load(env.Provider("", ".", func(s string) string {
+		return strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(s, "")), "__", ".")
+	}), nil); err != nil {
+		return nil, fmt.Errorf("failed to load env config from ENV: %w", err)
+	}
+
 	// check if a config/api/%s.secrets.toml exists and load it if it is
 	if val, ok := konf.Get("secrets_path").(string); ok {
 		if _, err := os.Stat(val); err == nil {
@@ -84,12 +90,6 @@ func ParseConfig(environment string) (*Config, error) {
 				return nil, fmt.Errorf("failed to load env config from toml: %w", err)
 			}
 		}
-	}
-
-	if err := konf.Load(env.Provider("", ".", func(s string) string {
-		return strings.ReplaceAll(strings.ToLower(strings.TrimPrefix(s, "")), "__", ".")
-	}), nil); err != nil {
-		return nil, fmt.Errorf("failed to load env config from ENV: %w", err)
 	}
 
 	cfg := &Config{}
