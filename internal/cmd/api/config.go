@@ -78,9 +78,7 @@ func ParseConfig(environment string) (*Config, error) {
 	if val, ok := konf.Get("secrets_path").(string); ok {
 		if _, err := os.Stat(val); err == nil {
 			if err := konf.Load(
-				file.Provider(
-					fmt.Sprintf("config/api/%s.secrets.toml", environment),
-				),
+				file.Provider(val),
 				toml.Parser(),
 			); err != nil {
 				return nil, fmt.Errorf("failed to load env config from toml: %w", err)
