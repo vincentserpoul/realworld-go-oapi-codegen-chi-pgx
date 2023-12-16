@@ -173,6 +173,13 @@ export default function (data) {
         "Single article": (r) => r.status === 201,
       });
       createdArticle = JSON.parse(request.body).article;
+
+      // create another one, for testing
+      body.article.title = crypto.randomUUID().toString();
+      let requestCrArt = http.post(url, JSON.stringify(body), params);
+      check(requestCrArt, {
+        "Single article": (r) => r.status === 201,
+      });
     }
     let offset = "0"; // specify value as there is no example value for this parameter in OpenAPI spec
     let author = data.realusername; // specify value as there is no example value for this parameter in OpenAPI spec
@@ -242,7 +249,7 @@ export default function (data) {
     }
   });
   group("/articles/{slug}", () => {
-    let slug = createdArticle.slug; // specify value as there is no example value for this parameter in OpenAPI spec
+    const slug = createdArticle.slug; // specify value as there is no example value for this parameter in OpenAPI spec
     // Request No. 1: GetArticle
     {
       let url = BASE_URL + `/articles/${slug}`;
@@ -252,9 +259,32 @@ export default function (data) {
       });
       sleep(SLEEP_DURATION);
     }
-    // Request No. 2: DeleteArticle
+    // Request No. 2: CreateArticle
     {
-      let url = BASE_URL + `/articles/${slug}`;
+      let urlC = BASE_URL + `/articles`;
+      // TODO: edit the parameters of the request body.
+      let body = {
+        article: {
+          title: crypto.randomUUID().toString(),
+          description: "string",
+          body: "string",
+          tagList: ["tagtest"],
+        },
+      };
+      let params = {
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: data.tokenHeader,
+        },
+      };
+      let requestC = http.post(urlC, JSON.stringify(body), params);
+      check(requestC, {
+        "Single article": (r) => r.status === 201,
+      });
+      const toDeleteArticle = JSON.parse(requestC.body).article;
+
+      let url = BASE_URL + `/articles/${toDeleteArticle.slug}`;
       let request = http.del(url, null, data.headers);
       check(request, {
         "No content": (r) => r.status === 200,
