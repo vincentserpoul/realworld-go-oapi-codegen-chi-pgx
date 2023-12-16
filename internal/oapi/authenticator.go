@@ -8,7 +8,7 @@ import (
 
 	"github.com/getkin/kin-openapi/openapi3filter"
 	"github.com/go-chi/jwtauth/v5"
-	"github.com/gofrs/uuid/v5"
+	"github.com/google/uuid"
 	"github.com/induzo/gocom/http/middleware/writablecontext"
 	"github.com/lestrrat-go/jwx/v2/jwt"
 )
@@ -38,7 +38,7 @@ func getUserIDFromContext(ctx context.Context) uuid.UUID {
 		return uuid.Nil
 	}
 
-	userID, err := uuid.FromString(userIDAny.(string))
+	userID, err := uuid.Parse(userIDAny.(string))
 	if err != nil {
 		return uuid.Nil
 	}

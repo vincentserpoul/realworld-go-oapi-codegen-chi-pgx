@@ -8,7 +8,7 @@ import (
 	"time"
 
 	"github.com/go-chi/jwtauth/v5"
-	"github.com/gofrs/uuid/v5"
+	"github.com/google/uuid"
 	"github.com/lestrrat-go/jwx/jwt"
 
 	"realworld/internal/domain"

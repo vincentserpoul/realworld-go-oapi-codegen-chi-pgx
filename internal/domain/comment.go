@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/gofrs/uuid/v5"
+	"github.com/google/uuid"
 )
 
 type Comment struct {

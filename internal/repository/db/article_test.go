@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"github.com/gofrs/uuid/v5"
+	"github.com/google/uuid"
 
 	"realworld/internal/domain"
 )

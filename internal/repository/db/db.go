@@ -38,7 +38,7 @@ func NewRepository(ctx context.Context, connString string) (*Repository, error) 
 		connString,
 		pginit.WithTracer(otelpgx.WithTracerProvider(otel.GetTracerProvider())),
 		pginit.WithDecimalType(),
-		pginit.WithUUIDType(),
+		pginit.WithGoogleUUIDType(),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to initialize PGInit: %w", err)
