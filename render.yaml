@@ -5,7 +5,7 @@ services:
     name: realworld-sgp
     runtime: image
     image:
-      url: ghcr.io/vincentserpoul/realworld-go-oapi-codegen-chi-pgx:v0.0.18
+      url: ghcr.io/vincentserpoul/realworld-go-oapi-codegen-chi-pgx:v0.0.25
     healthCheckPath: /sys/health
     envVars:
       - key: DATABASE_URL
