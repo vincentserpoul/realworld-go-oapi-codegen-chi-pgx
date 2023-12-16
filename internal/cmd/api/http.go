@@ -13,7 +13,10 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/httplog/v2"
 	"github.com/induzo/gocom/http/health"
-	"github.com/riandyrn/otelchi"
+	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
+	"go.opentelemetry.io/otel"
+	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type httpManager struct {
@@ -46,7 +49,7 @@ func newHTTPManager(cfg *HTTPConfig, withDebug bool) (*httpManager, error) {
 
 	mux.Use(httplog.RequestLogger(logger))
 	// add otel middleware
-	mux.Use(otelchi.Middleware("httpsvc", otelchi.WithChiRoutes(mux)))
+	mux.Use(otelHandler)
 
 	// add all health checks to the health endpoint
 	healthMgr := health.NewHealth()
@@ -135,4 +138,25 @@ func (hm *httpManager) RegisterHTTPSvc(
 	for _, hc := range healthChecks {
 		hm.healthManager.RegisterCheck(hc)
 	}
+}
+
+func otelHandler(h http.Handler) http.Handler {
+	return otelhttp.NewHandler(
+		http.HandlerFunc(func(resp http.ResponseWriter, req *http.Request) {
+			h.ServeHTTP(resp, req)
+
+			routePattern := chi.RouteContext(req.Context()).RoutePattern()
+
+			span := trace.SpanFromContext(req.Context())
+			span.SetName(routePattern)
+			span.SetAttributes(semconv.HTTPTarget(req.URL.String()), semconv.HTTPRoute(routePattern))
+
+			labeler, ok := otelhttp.LabelerFromContext(req.Context())
+			if ok {
+				labeler.Add(semconv.HTTPRoute(routePattern))
+			}
+		}),
+		"",
+		otelhttp.WithMeterProvider(otel.GetMeterProvider()),
+	)
 }
