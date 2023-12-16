@@ -5,7 +5,7 @@ with_debug_profiler = false
 
 [log]
 is_pretty = false
-level = "error"
+level = "info"
 
 [observability.collector]
 host = "localhost"
