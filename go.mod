@@ -6,8 +6,8 @@ require (
 	github.com/arl/statsviz v0.6.0
 	github.com/exaring/otelpgx v0.5.2
 	github.com/getkin/kin-openapi v0.122.0
-	github.com/go-chi/chi/v5 v5.0.10
-	github.com/golang-migrate/migrate/v4 v4.16.2
+	github.com/go-chi/chi/v5 v5.0.11
+	github.com/golang-migrate/migrate/v4 v4.17.0
 	github.com/gosimple/slug v1.13.1
 	github.com/honeycombio/otel-config-go v1.13.1
 	github.com/induzo/gocom/database/pginit/v2 v2.2.0
@@ -22,8 +22,8 @@ require (
 	github.com/lmittmann/tint v1.0.3
 	github.com/oapi-codegen/nethttp-middleware v1.0.1
 	github.com/oapi-codegen/runtime v1.1.0
-	github.com/testcontainers/testcontainers-go v0.26.0
-	github.com/testcontainers/testcontainers-go/modules/postgres v0.26.0
+	github.com/testcontainers/testcontainers-go v0.27.0
+	github.com/testcontainers/testcontainers-go/modules/postgres v0.27.0
 	go.uber.org/goleak v1.3.0
 )
 
@@ -69,11 +69,11 @@ require (
 	github.com/fsnotify/fsnotify v1.7.0 // indirect
 	github.com/go-chi/httplog/v2 v2.0.8
 	github.com/go-chi/jwtauth/v5 v5.3.0
-	github.com/go-logr/logr v1.3.0 // indirect
+	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
-	github.com/go-openapi/jsonpointer v0.20.0 // indirect
-	github.com/go-openapi/swag v0.22.4 // indirect
+	github.com/go-openapi/jsonpointer v0.20.2 // indirect
+	github.com/go-openapi/swag v0.22.7 // indirect
 	github.com/goccy/go-json v0.10.2 // indirect
 	github.com/gogo/protobuf v1.3.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -131,8 +131,8 @@ require (
 	go.opentelemetry.io/otel/trace v1.21.0
 	go.opentelemetry.io/proto/otlp v1.0.0 // indirect
 	go.uber.org/atomic v1.11.0 // indirect
-	golang.org/x/crypto v0.16.0 // indirect
-	golang.org/x/exp v0.0.0-20231214170342-aacd6d4b4611 // indirect
+	golang.org/x/crypto v0.17.0 // indirect
+	golang.org/x/exp v0.0.0-20231226003508-02704c960a9b // indirect
 	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/net v0.19.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
@@ -141,7 +141,7 @@ require (
 	golang.org/x/tools v0.16.1 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20231212172506-995d672761c0 // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20231212172506-995d672761c0 // indirect
-	google.golang.org/grpc v1.60.0 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/grpc v1.60.1 // indirect
+	google.golang.org/protobuf v1.32.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
