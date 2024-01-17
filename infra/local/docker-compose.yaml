@@ -1,4 +1,4 @@
-version: '3'
+version: '3.8'
 services:
   # postgres
   lp-postgres:
@@ -8,8 +8,11 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: localworld
       POSTGRES_DB: realworld
+      PGDATA: /data/postgres
     ports:
       - '5432:5432'
+    volumes:
+      - lp-postgres:/data/postgres
   # openobserve
   openobserve:
     image: public.ecr.aws/zinclabs/openobserve:v0.7.2
@@ -18,21 +21,29 @@ services:
       - '5080:5080'
       - '5081:5081'
     volumes:
-      - type: bind
-        source: ./data
-        target: /data
+      - openobserve-data:/data # we need to use ../ and not ./ because docker-compose is run from the root of the first docker-compose file it finds
     environment:
       ZO_DATA_DIR: /data
       ZO_ROOT_USER_EMAIL: test@po.com
       ZO_ROOT_USER_PASSWORD: test # pragma: allowlist secret
   # collector
   otel-collector:
-    image: otel/opentelemetry-collector:0.90.1
+    image: otel/opentelemetry-collector-contrib:0.91.0
     restart: always
-    ports:
-      - '4317:4317'
     volumes:
-      - ./otel-collector-config.yaml:/etc/otel-collector-config.yaml:ro
-    command: ["--config", "/etc/otel-collector-config.yaml"]
+      - ./otel-collector-config.yaml:/etc/otelcol-contrib/custom-config.yaml
+    command: ["--config=/etc/otelcol-contrib/custom-config.yaml"]
+    ports:
+      - 1888:1888 # pprof extension
+      - 8888:8888 # Prometheus metrics exposed by the Collector
+      - 8889:8889 # Prometheus exporter metrics
+      - 13133:13133 # health_check extension
+      - 4317:4317 # OTLP gRPC receiver
+      - 4318:4318 # OTLP http receiver
+      - 55679:55679 # zpages extension
     depends_on:
       - openobserve
+
+volumes:
+  openobserve-data:
+  lp-postgres:

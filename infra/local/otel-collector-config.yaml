@@ -12,7 +12,7 @@ exporters:
   otlphttp/openobserve:
     endpoint: http://openobserve:5080/api/default
     headers:
-      Authorization: "Basic HEADER_TOKEN_TO_BE_REPLACED"
+      Authorization: "Basic dGVzdEBwby5jb206dGVzdA=="
     tls:
       insecure: true
 

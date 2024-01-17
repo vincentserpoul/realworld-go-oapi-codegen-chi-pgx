@@ -139,10 +139,10 @@ db-migration-down: ## migration down
 #########
 
 infra-local-up: ## launch local infra
-	docker-compose -f ./infra/local/docker-compose.yaml up -d
+	docker compose -f ./infra/local/docker-compose.yaml up -d
 
 infra-local-down: ## remoave local infra
-	docker-compose -f ./infra/local/docker-compose.yaml down
+	docker compose -f ./infra/local/docker-compose.yaml down
 
 ###########
 #   GCI   #
