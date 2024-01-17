@@ -109,19 +109,6 @@ build-docker-generic:
 # db #
 ######
 
-APP_NAME_UND=$(shell echo "$(API_NAME)" | tr '-' '_')
-
-db-pg-init: ## create users and passwords in postgres for your app
-	@( \
-	printf "Enter pass for db: \n"; read -rs DB_PASSWORD &&\
-	printf "Enter port(5436...): \n"; read -r DB_PORT &&\
-	sed \
-	-e "s/DB_PASSWORD/$$DB_PASSWORD/g" \
-	-e "s/APP_NAME_UND/$(APP_NAME_UND)/g" \
-	./database/init/init.sql | \
-	PGPASSWORD=$$DB_PASSWORD psql -h localhost -p $$DB_PORT -U postgres -f - \
-	)
-
 db-migration-up: ## migration up, using https://github.com/golang-migrate/migrate
 	@( \
 	printf "Enter database URL (for ex: postgres://postgres:localworld@localhost:5432/realworld?sslmode=disable): \n"; read -r DATABASE_URL &&\
