@@ -11,65 +11,61 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  GOLANG_VERSION: "1.21.5"
-  LINTER_VERSION: "v1.55.2"
-  TRIVY_VERSION: "v0.47.0"
+  LINTER_VERSION: "v2.0.2"
+  TRIVY_VERSION: "v0.61.0"
 
 jobs:
   check-conv-commits:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu, small]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          # pick the pr HEAD instead of the merge commit
-          ref: ${{ github.event.pull_request.head.sha }}
       - name: Conventional commit check
         uses: cocogitto/cocogitto-action@v3
-        with:
-          check-latest-tag-only: true
   lint:
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
+    name: lint
+    runs-on: [ubuntu, large]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GOLANG_VERSION }}
-          cache: true
-      - name: Cache golangci-lint
-        id: golangci-lint
-        uses: actions/cache@v3
+          go-version-file: 'go.mod'
+      - name: go-lint-goleak
+        run: make lint-goleak
+      - name: golangci-lint
+        uses: golangci/golangci-lint-action@v7
         with:
-          path: |
-            ~/.cache/golangci-lint
-          key: ${{ runner.os }}-golangci-lint
-      - name: Install golangci-lint
-        run: |
-          curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $HOME/.local/bin ${{ env.LINTER_VERSION }}
-      - name: Lint all modules with golangci-lint
-        run: |
-          PATH=$PATH:$HOME/.local/bin make lint
+          version: ${{ env.LINTER_VERSION }}
+          args: ./... --config=./.golangci.toml
+          only-new-issues: true
   sec-scan:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: [self-hosted, ubuntu, small]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GOLANG_VERSION }}
-          cache: true
+          go-version-file: 'go.mod'
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: "ghcr.io"
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
       - name: Install trivy
         run: |
           curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b $HOME/.local/bin ${{ env.TRIVY_VERSION }}
       - name: Run security scan with aquasecurity trivy
         run: make sec-trivy-scan
+        env:
+          TRIVY_DB_REPOSITORY: "ghcr.io/aquasecurity/trivy-db,public.ecr.aws/aquasecurity/trivy-db"
       - name: Install govuln
         run: |
           go install golang.org/x/vuln/cmd/govulncheck@latest
@@ -78,32 +74,17 @@ jobs:
           make sec-vuln-scan
   tests:
     timeout-minutes: 15
-    runs-on: ubuntu-latest
+    runs-on: [ubuntu, large]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Install Go
-        uses: actions/setup-go@v4
+        uses: actions/setup-go@v5
         with:
-          go-version: ${{ env.GOLANG_VERSION }}
-          cache: true
-      - name: Run tests
-        run: make test
-  coveralls:
-    timeout-minutes: 15
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-      - name: Install Go
-        uses: actions/setup-go@v4
-        with:
-          go-version: ${{ env.GOLANG_VERSION }}
-          cache: true
-      - name: Install goveralls
-        run: go install github.com/mattn/goveralls@latest
+          go-version-file: 'go.mod'
       - name: Test and send coverage to coveralls
         env:
-          COVERALLS_TOKEN: ${{ secrets.COVERALLS_TOKEN }}
+          COVERALLS_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+          TIMEOUT_GO_TEST: 5m
         run: |
           make test-coveralls
