@@ -43,7 +43,7 @@ func getUserIDFromContext(ctx context.Context) uuid.UUID {
 		return uuid.Nil
 	}
 
-	userID, err := uuid.FromString(uids)
+	userID, err := uuid.Parse(uids)
 	if err != nil {
 		return uuid.Nil
 	}
