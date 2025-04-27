@@ -1,7 +1,6 @@
 package db
 
 import (
-	"context"
 	"reflect"
 	"testing"
 
@@ -16,7 +15,7 @@ func TestRepository_GetProfile(t *testing.T) {
 	testrep := withRepo(t, "get_profile")
 	t.Cleanup(func() {
 		for _, f := range testrep.GetShutdownFuncs() {
-			if err := f(context.Background()); err != nil {
+			if err := f(t.Context()); err != nil {
 				t.Errorf("could not shutdown: %v", err)
 			}
 		}
@@ -37,16 +36,16 @@ func TestRepository_GetProfile(t *testing.T) {
 			},
 		},
 	}
+
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
 			// register other user to follow
-			regUser, _ := testrep.RegisterUser(context.Background(), uuid.Must(uuid.NewV7()), tt.want.Username, "jakeprofile@lop.com", "122")
-			testrep.UpdateUser(context.Background(), regUser.ID, nil, nil, nil, &tt.want.Bio, &tt.want.Image)
+			regUser, _ := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), tt.want.Username, "jakeprofile@lop.com", "122")
+			testrep.UpdateUser(t.Context(), regUser.ID, nil, nil, nil, &tt.want.Bio, &tt.want.Image)
 
-			got, err := testrep.GetProfile(context.Background(), regUser.ID, tt.want.Username)
+			got, err := testrep.GetProfile(t.Context(), regUser.ID, tt.want.Username)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.GetProfile() error = %v, wantErr %v", err, tt.wantErr)
 
@@ -66,14 +65,14 @@ func TestRepository_FollowUser(t *testing.T) {
 	testrep := withRepo(t, "follow_user")
 	t.Cleanup(func() {
 		for _, f := range testrep.GetShutdownFuncs() {
-			if err := f(context.Background()); err != nil {
+			if err := f(t.Context()); err != nil {
 				t.Errorf("could not shutdown: %v", err)
 			}
 		}
 	})
 
-	follower, _ := testrep.RegisterUser(context.Background(), uuid.Must(uuid.NewV7()), "jakefollow", "jakefollow@po.com", "122")
-	followee, _ := testrep.RegisterUser(context.Background(), uuid.Must(uuid.NewV7()), "jakefollowee", "jakefollowee@po.com", "122")
+	follower, _ := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), "jakefollow", "jakefollow@po.com", "122")
+	followee, _ := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), "jakefollowee", "jakefollowee@po.com", "122")
 
 	followeeProfile := &domain.Profile{
 		Username:  followee.Username,
@@ -102,7 +101,6 @@ func TestRepository_FollowUser(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -111,7 +109,7 @@ func TestRepository_FollowUser(t *testing.T) {
 				followeeUserName = "notextist"
 			}
 
-			got, err := testrep.FollowUser(context.Background(), follower.ID, followeeUserName)
+			got, err := testrep.FollowUser(t.Context(), follower.ID, followeeUserName)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.FollowUser() error = %v, wantErr %v", err, tt.wantErr)
 
@@ -131,14 +129,14 @@ func TestRepository_UnfollowUser(t *testing.T) {
 	testrep := withRepo(t, "unfollow_user")
 	t.Cleanup(func() {
 		for _, f := range testrep.GetShutdownFuncs() {
-			if err := f(context.Background()); err != nil {
+			if err := f(t.Context()); err != nil {
 				t.Errorf("could not shutdown: %v", err)
 			}
 		}
 	})
 
-	follower, _ := testrep.RegisterUser(context.Background(), uuid.Must(uuid.NewV7()), "jakefollow", "jakefollow@po.com", "122")
-	followee, _ := testrep.RegisterUser(context.Background(), uuid.Must(uuid.NewV7()), "jakefollowee", "jakefollowee@po.com", "122")
+	follower, _ := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), "jakefollow", "jakefollow@po.com", "122")
+	followee, _ := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), "jakefollowee", "jakefollowee@po.com", "122")
 
 	tests := []struct {
 		name          string
@@ -152,15 +150,14 @@ func TestRepository_UnfollowUser(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
 			// first follow user
-			testrep.FollowUser(context.Background(), follower.ID, followee.Username)
+			testrep.FollowUser(t.Context(), follower.ID, followee.Username)
 
 			// then unfollow
-			got, err := testrep.UnfollowUser(context.Background(), follower.ID, followee.Username)
+			got, err := testrep.UnfollowUser(t.Context(), follower.ID, followee.Username)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.UnfollowUser() error = %v, wantErr %v", err, tt.wantErr)
 

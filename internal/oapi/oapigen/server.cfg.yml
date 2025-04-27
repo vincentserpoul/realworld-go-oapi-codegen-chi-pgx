@@ -1,9 +1,6 @@
 package: oapigen
 generate:
   chi-server: true
-  client: false
   embedded-spec: true
   strict-server: true
-compatibility:
-  apply-chi-middleware-first-to-last: true
 output: ./server.gen.go

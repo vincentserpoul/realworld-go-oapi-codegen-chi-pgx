@@ -1,7 +1,6 @@
 package db
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -15,7 +14,7 @@ func TestRepository_CreateArticle(t *testing.T) {
 	testrep := withRepo(t, "create_article")
 	t.Cleanup(func() {
 		for _, f := range testrep.GetShutdownFuncs() {
-			if err := f(context.Background()); err != nil {
+			if err := f(t.Context()); err != nil {
 				t.Errorf("could not shutdown: %v", err)
 			}
 		}
@@ -55,7 +54,6 @@ func TestRepository_CreateArticle(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -65,12 +63,12 @@ func TestRepository_CreateArticle(t *testing.T) {
 				t.Errorf("could not generate uuid: %v", errU)
 			}
 
-			usr, errUsr := testrep.RegisterUser(context.Background(), userID, tt.args.username, tt.args.username+"@gmail.com", "")
+			usr, errUsr := testrep.RegisterUser(t.Context(), userID, tt.args.username, tt.args.username+"@gmail.com", "")
 			if errUsr != nil {
 				t.Errorf("could not register user: %v", errUsr)
 			}
 
-			got, err := testrep.CreateArticle(context.Background(), usr.ID, tt.args.title, tt.args.description, tt.args.body, tt.args.tagList)
+			got, err := testrep.CreateArticle(t.Context(), usr.ID, tt.args.title, tt.args.description, tt.args.body, tt.args.tagList)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.CreateArticle() error = %v, wantErr %v", err, tt.wantErr)
 
@@ -94,7 +92,7 @@ func TestRepository_GetArticle(t *testing.T) {
 	testrep := withRepo(t, "get_article")
 	t.Cleanup(func() {
 		for _, f := range testrep.GetShutdownFuncs() {
-			if err := f(context.Background()); err != nil {
+			if err := f(t.Context()); err != nil {
 				t.Errorf("could not shutdown: %v", err)
 			}
 		}
@@ -127,7 +125,6 @@ func TestRepository_GetArticle(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
@@ -137,7 +134,7 @@ func TestRepository_GetArticle(t *testing.T) {
 				t.Errorf("could not generate uuid: %v", errU)
 			}
 
-			usr, errUsr := testrep.RegisterUser(context.Background(), userID, tt.want.Author.Username, tt.want.Author.Username+"@gmail.com", "")
+			usr, errUsr := testrep.RegisterUser(t.Context(), userID, tt.want.Author.Username, tt.want.Author.Username+"@gmail.com", "")
 			if errUsr != nil {
 				t.Errorf("could not register user: %v", errUsr)
 			}
@@ -148,9 +145,9 @@ func TestRepository_GetArticle(t *testing.T) {
 				tags[idx] = string(tag)
 			}
 
-			_, _ = testrep.CreateArticle(context.Background(), usr.ID, tt.want.Title, tt.want.Description, tt.want.Body, tags)
+			_, _ = testrep.CreateArticle(t.Context(), usr.ID, tt.want.Title, tt.want.Description, tt.want.Body, tags)
 
-			got, err := testrep.GetArticle(context.Background(), usr.ID, tt.slug)
+			got, err := testrep.GetArticle(t.Context(), usr.ID, tt.slug)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.GetArticle() error = %v, wantErr %v", err, tt.wantErr)
 

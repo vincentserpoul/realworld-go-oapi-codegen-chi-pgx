@@ -1,7 +1,6 @@
 package db
 
 import (
-	"context"
 	"testing"
 
 	"github.com/google/uuid"
@@ -15,7 +14,7 @@ func TestRepository_AddComment(t *testing.T) {
 	testrep := withRepo(t, "add_comment")
 	t.Cleanup(func() {
 		for _, f := range testrep.GetShutdownFuncs() {
-			if err := f(context.Background()); err != nil {
+			if err := f(t.Context()); err != nil {
 				t.Errorf("could not shutdown: %v", err)
 			}
 		}
@@ -27,13 +26,13 @@ func TestRepository_AddComment(t *testing.T) {
 		t.Errorf("could not generate uuid: %v", errU)
 	}
 
-	usr, errUsr := testrep.RegisterUser(context.Background(), userID, "joko", "joko@gmail.com", "")
+	usr, errUsr := testrep.RegisterUser(t.Context(), userID, "joko", "joko@gmail.com", "")
 	if errUsr != nil {
 		t.Errorf("could not register user: %v", errUsr)
 	}
 
 	// save an article
-	art, errA := testrep.CreateArticle(context.Background(), usr.ID, "How to train your dragon", "Ever wonder how?", "It takes a Jacobian", []string{"dragons", "training"})
+	art, errA := testrep.CreateArticle(t.Context(), usr.ID, "How to train your dragon", "Ever wonder how?", "It takes a Jacobian", []string{"dragons", "training"})
 	if errA != nil {
 		t.Errorf("could not create an article: %v", errA)
 	}
@@ -73,11 +72,10 @@ func TestRepository_AddComment(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
-			got, err := testrep.AddComment(context.Background(), usr.ID, tt.args.slug, tt.args.body)
+			got, err := testrep.AddComment(t.Context(), usr.ID, tt.args.slug, tt.args.body)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.AddComment() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -100,7 +98,7 @@ func TestRepository_GetComments(t *testing.T) {
 	testrep := withRepo(t, "get_comments")
 	t.Cleanup(func() {
 		for _, f := range testrep.GetShutdownFuncs() {
-			if err := f(context.Background()); err != nil {
+			if err := f(t.Context()); err != nil {
 				t.Errorf("could not shutdown: %v", err)
 			}
 		}
@@ -112,13 +110,13 @@ func TestRepository_GetComments(t *testing.T) {
 		t.Errorf("could not generate uuid: %v", errU)
 	}
 
-	usr, errUsr := testrep.RegisterUser(context.Background(), userID, "joko", "joko@gmail.com", "")
+	usr, errUsr := testrep.RegisterUser(t.Context(), userID, "joko", "joko@gmail.com", "")
 	if errUsr != nil {
 		t.Errorf("could not register user: %v", errUsr)
 	}
 
 	// save an article
-	art, errA := testrep.CreateArticle(context.Background(), usr.ID, "How to train your dragon", "Ever wonder how?", "It takes a Jacobian", []string{"dragons", "training"})
+	art, errA := testrep.CreateArticle(t.Context(), usr.ID, "How to train your dragon", "Ever wonder how?", "It takes a Jacobian", []string{"dragons", "training"})
 	if errA != nil {
 		t.Errorf("could not create an article: %v", errA)
 	}
@@ -142,19 +140,18 @@ func TestRepository_GetComments(t *testing.T) {
 	}
 
 	for _, tt := range tests {
-		tt := tt
 		t.Run(tt.name, func(t *testing.T) {
 			t.Parallel()
 
 			// create a comment
-			_, errC := testrep.AddComment(context.Background(), usr.ID, art.Slug, "I like this article")
+			_, errC := testrep.AddComment(t.Context(), usr.ID, art.Slug, "I like this article")
 			if errC != nil {
 				t.Errorf("could not create a comment: %v", errC)
 
 				return
 			}
 
-			got, err := testrep.GetComments(context.Background(), usr.ID, art.Slug)
+			got, err := testrep.GetComments(t.Context(), usr.ID, art.Slug)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.GetComments() error = %v, wantErr %v", err, tt.wantErr)
 				return

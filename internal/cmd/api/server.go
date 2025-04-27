@@ -23,7 +23,7 @@ func (e ShutdownErrors) Error() string {
 		}
 	}
 
-	return fmt.Sprintf("error cause: %s", strings.Join(errStr, ";"))
+	return "error cause: %s" + strings.Join(errStr, ";")
 }
 
 func (e ShutdownErrors) IsNil() bool {

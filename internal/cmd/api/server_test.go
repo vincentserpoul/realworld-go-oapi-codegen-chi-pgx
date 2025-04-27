@@ -2,9 +2,8 @@ package api
 
 import (
 	"context"
+	"errors"
 	"flag"
-	"fmt"
-	"io"
 	"log/slog"
 	"os"
 	"syscall"
@@ -54,8 +53,10 @@ func TestAPI_Start(t *testing.T) { //nolint: tparallel // disable because port c
 			name: "shutdown error",
 			cfg:  cfg,
 			shutdownFuncs: map[string]func(ctx context.Context) error{
-				"mock err": func(ctx context.Context) error {
-					return fmt.Errorf("mock err")
+				"mock err": func(_ context.Context) error {
+					mockErr := errors.New("mock err")
+
+					return mockErr
 				},
 			},
 			wantErr: true,
@@ -64,7 +65,7 @@ func TestAPI_Start(t *testing.T) { //nolint: tparallel // disable because port c
 			name: "happy",
 			cfg:  cfg,
 			shutdownFuncs: map[string]func(ctx context.Context) error{
-				"shutdown": func(ctx context.Context) error {
+				"shutdown": func(_ context.Context) error {
 					return nil
 				},
 			},
@@ -73,12 +74,11 @@ func TestAPI_Start(t *testing.T) { //nolint: tparallel // disable because port c
 	}
 
 	for _, tt := range tests { //nolint: paralleltest // disable because port conflict on host machine
-		tt := tt
-
 		t.Run(tt.name, func(t *testing.T) {
-			ctx := context.Background()
-			logger := slog.New(slog.NewTextHandler(io.Discard, &slog.HandlerOptions{}))
+			ctx := t.Context()
+			logger := slog.New(slog.DiscardHandler)
 			shutdownHandler := shutdown.New(logger)
+
 			srv, err := NewServer(&cfg, shutdownHandler, logger)
 			if err != nil {
 				t.Errorf("failed to create api server: %v", err)

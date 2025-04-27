@@ -10,10 +10,12 @@ import (
 
 type Tag string
 
+//nolint:iface //for extension
 type TagService interface {
 	GetTags(ctx context.Context) ([]Tag, error)
 }
 
+//nolint:iface //for extension
 type TagRepository interface {
 	GetTags(ctx context.Context) ([]Tag, error)
 }
@@ -36,10 +38,12 @@ func GetSlugFromTitle(title string) string {
 	return slug.Make(title)
 }
 
+//nolint:iface //for extension
 type ArticleService interface {
 	ArticleRepository
 }
 
+//nolint:iface //for extension
 type ArticleRepository interface {
 	GetArticles(
 		ctx context.Context,

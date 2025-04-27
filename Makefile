@@ -24,21 +24,19 @@ SHELL = /bin/bash
 ########
 
 test: ## launch all tests
-	go test ./... -cover -race -leak
-
-test-race: ## launch all tests with race detection
-	go test ./... -cover -race
-
-test-leak: ## launch all tests with leak detection
-	go test ./... -leak
+	go test ./... -race -failfast -cover
 
 test-coverage-report: ## test with coverage report
-	go test -v  ./... -cover -race -covermode=atomic -coverprofile=./coverage.out
+	go test ./internal/... -race -failfast -coverpkg=./... -covermode=atomic -coverprofile=./coverage.out
 	go tool cover -html=coverage.out
 
 test-coveralls:
-	go test -v ./... -race -leak -failfast -covermode=atomic -coverprofile=./coverage.out
-	goveralls -covermode=atomic -coverprofile=./coverage.out -repotoken=$(COVERALLS_TOKEN)
+	go test ./... -race -failfast -coverpkg=./internal/... -covermode=atomic -coverprofile=./coverage.out
+	go tool goveralls -covermode=atomic -coverprofile=./coverage.out -repotoken=$(COVERALLS_TOKEN)
+
+
+test-clean-cache: ## clean test cache
+	go clean -testcache
 
 
 #############
@@ -49,7 +47,7 @@ bench: ## launch benchs
 	go test ./... -bench=. -benchmem | tee ./bench.txt
 
 bench-compare: ## compare benchs results
-	benchstat ./bench.txt
+	go tool benchstat ./bench.txt
 
 ############
 # upgrades #
@@ -61,13 +59,23 @@ upgrade: ## upgrade dependencies (beware, it can break everything)
 	go mod tidy
 
 
+upgrade-tools: ## upgrade all tools listed in go.mod
+	@echo "Upgrading tools..."
+	@tools=$$(sed -n '/^tool (/,/)/p' go.mod | grep -E '^\s*github.com'); \
+	  for tool in $$tools; do \
+	    echo "Upgrading $$tool"; \
+	    go get -tool $$tool; \
+	  done
+
 ########
 # lint #
 ########
 
 lint: ## lints the entire codebase
-	@golangci-lint run ./... --config=./.golangci.toml
+	@go tool golangci-lint run ./... --config=./.golangci.toml
 
+lint-clean-cache: ## clean the linter cache
+	@go tool golangci-lint cache clean
 
 #######
 # sec #
@@ -79,7 +87,7 @@ sec-trivy-scan: ## scan for sec issues with trivy (trivy binary needed)
 	trivy fs --exit-code 1 --no-progress --severity CRITICAL ./
 
 sec-vuln-scan: ## scan for vulnerability issues with govulncheck (govulncheck binary needed)
-	govulncheck ./...
+	go tool govulncheck ./...
 
 
 #########
@@ -136,11 +144,4 @@ infra-local-down: ## remoave local infra
 ###########
 
 gci-format: ## format repo through gci linter
-	gci write ./ --skip-generated -s standard -s default -s "Prefix(realworld)"
-
-############
-# Generate #
-############
-
-generate: ## generate code
-	go generate ./...
+	go tool gci ./ --skip-generated -s standard -s default -s "Prefix(realworld)"

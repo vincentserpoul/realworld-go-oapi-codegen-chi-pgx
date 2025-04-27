@@ -33,12 +33,17 @@ func getTokenFromContext(ctx context.Context) string {
 }
 
 func getUserIDFromContext(ctx context.Context) uuid.UUID {
-	userIDAny, ok := writablecontext.FromContext(ctx).Get(UserIDContextKey)
-	if !ok {
+	userIDAny, isValid := writablecontext.FromContext(ctx).Get(UserIDContextKey)
+	if !isValid {
 		return uuid.Nil
 	}
 
-	userID, err := uuid.Parse(userIDAny.(string))
+	uids, isValid := userIDAny.(string)
+	if !isValid {
+		return uuid.Nil
+	}
+
+	userID, err := uuid.FromString(uids)
 	if err != nil {
 		return uuid.Nil
 	}

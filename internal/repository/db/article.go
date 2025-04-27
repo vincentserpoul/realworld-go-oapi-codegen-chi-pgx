@@ -125,25 +125,6 @@ func (r *Repository) createArticle(
 
 	var errTx error
 
-	trx, err := r.pool.Begin(ctx)
-	if err != nil {
-		return fmt.Errorf("could not begin tx: %w", err)
-	}
-
-	defer func() {
-		if errTx != nil {
-			if err := trx.Rollback(ctx); err != nil {
-				errTx = errors.Join(errTx, fmt.Errorf("could not rollback tx: %w", err))
-			}
-
-			return
-		}
-
-		if err := trx.Commit(ctx); err != nil {
-			errTx = errors.Join(errTx, fmt.Errorf("could not commit tx: %w", err))
-		}
-	}()
-
 	// Create a batch
 	batch := &pgx.Batch{}
 
@@ -183,7 +164,7 @@ func (r *Repository) createArticle(
 	)
 
 	// execute the batch
-	batchRes := trx.SendBatch(ctx, batch)
+	batchRes := r.pool.SendBatch(ctx, batch)
 
 	// check for errors
 	if _, err := batchRes.Exec(); err != nil {

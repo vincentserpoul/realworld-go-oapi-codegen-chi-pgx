@@ -2,6 +2,7 @@ package db
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 
@@ -110,7 +111,7 @@ func (r *Repository) GetCurrentUser(ctx context.Context, userID uuid.UUID) (*dom
 	return user, nil
 }
 
-var ErrNoFieldsToUpdate = fmt.Errorf("no fields to update")
+var ErrNoFieldsToUpdate = errors.New("no fields to update")
 
 func (r *Repository) UpdateUser(
 	ctx context.Context,
@@ -148,7 +149,7 @@ func (r *Repository) UpdateUser(
 	}
 
 	if len(updatedFields) == 0 {
-		return nil, ErrNoFieldsToUpdate
+		return nil, fmt.Errorf("UpdateUser: %w", ErrNoFieldsToUpdate)
 	}
 
 	query := `
