@@ -1,4 +1,4 @@
-package: oapigen
+package: httpapi
 generate:
   chi-server: true
   embedded-spec: true

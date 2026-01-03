@@ -36,8 +36,10 @@ func TestNewSourceInstanceError(t *testing.T) {
 			expected: "could not create new source instance: some error with postgres://x:x@localhost:5432/dbname",
 		},
 		{
-			name:     "error with database URL and other text",
-			err:      errors.New("some error with postgres://user:password@localhost:5432/dbname and some other text"),
+			name: "error with database URL and other text",
+			err: errors.New(
+				"some error with postgres://user:password@localhost:5432/dbname and some other text", // pragma: allowlist secret
+			),
 			expected: "could not create new source instance: some error with postgres://x:x@localhost:5432/dbname and some other text",
 		},
 		{
@@ -46,8 +48,10 @@ func TestNewSourceInstanceError(t *testing.T) {
 			expected: "could not create new source instance: some error with postgres://x:x@localhost:5432/dbname",
 		},
 		{
-			name:     "error with database URL pg and other text",
-			err:      errors.New("some error with postgres://user:password@localhost:5432/dbname and some other text"),
+			name: "error with database URL pg and other text",
+			err: errors.New(
+				"some error with postgres://user:password@localhost:5432/dbname and some other text", // pragma: allowlist secret
+			),
 			expected: "could not create new source instance: some error with postgres://x:x@localhost:5432/dbname and some other text",
 		},
 	}

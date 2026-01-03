@@ -64,7 +64,12 @@ type ArticleRepository interface {
 		title, description, body string,
 		tagList []string,
 	) (*Article, error)
-	UpdateArticle(ctx context.Context, userID uuid.UUID, slug string, title, description, body *string) (*Article, error)
+	UpdateArticle(
+		ctx context.Context,
+		userID uuid.UUID,
+		slug string,
+		title, description, body *string,
+	) (*Article, error)
 	DeleteArticle(ctx context.Context, userID uuid.UUID, slug string) error
 	FavoriteArticle(ctx context.Context, userID uuid.UUID, slug string) (*Article, error)
 	UnfavoriteArticle(ctx context.Context, userID uuid.UUID, slug string) (*Article, error)

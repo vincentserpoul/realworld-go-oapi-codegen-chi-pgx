@@ -22,7 +22,7 @@ const (
 //go:embed migrations/*
 var MigrationFiles embed.FS
 
-func Migration(dbURL string, dir Direction) (uint, uint, error) { //nolint:cyclop // required for migration
+func Migration(dbURL string, dir Direction) (uint, uint, error) {
 	migInst, shutdownFn, err := newMigInstance(dbURL)
 	if err != nil {
 		return 0, 0, fmt.Errorf("could not migrate, new instance: %w", err)
@@ -81,7 +81,11 @@ func newMigInstance(dbURL string) (*migrate.Migrate, func(), error) {
 
 	shutdownFn := func() {
 		if errS, errD := migInst.Close(); errS != nil || errD != nil {
-			slog.Error("could not close migration", slog.Any("err source", errS), slog.Any("err db", errD))
+			slog.Error(
+				"could not close migration",
+				slog.Any("err source", errS),
+				slog.Any("err db", errD),
+			)
 		}
 
 		if errP := drv.Close(); errP != nil {

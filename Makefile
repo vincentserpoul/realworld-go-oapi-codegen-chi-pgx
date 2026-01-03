@@ -53,11 +53,10 @@ bench-compare: ## compare benchs results
 # upgrades #
 ############
 
-upgrade: ## upgrade dependencies (beware, it can break everything)
+upgrade: upgrade-tools ## upgrade dependencies (beware, it can break everything)
 	go mod tidy && \
 	go get -t -u ./... && \
 	go mod tidy
-
 
 upgrade-tools: ## upgrade all tools listed in go.mod
 	@echo "Upgrading tools..."
@@ -77,6 +76,7 @@ lint: ## lints the entire codebase
 lint-clean-cache: ## clean the linter cache
 	@go tool golangci-lint cache clean
 
+
 #######
 # sec #
 #######
@@ -84,7 +84,7 @@ lint-clean-cache: ## clean the linter cache
 sec-scan: sec-trivy-scan sec-vuln-scan ## scan for security and vulnerability issues
 
 sec-trivy-scan: ## scan for sec issues with trivy (trivy binary needed)
-	trivy fs --exit-code 1 --no-progress --severity CRITICAL ./
+	trivy fs --exit-code 1 --no-progress --severity LOW ./
 
 sec-vuln-scan: ## scan for vulnerability issues with govulncheck (govulncheck binary needed)
 	go tool govulncheck ./...
@@ -134,10 +134,14 @@ db-migration-down: ## migration down
 #########
 
 infra-local-up: ## launch local infra
-	docker compose -f ./infra/local/docker-compose.yaml up -d
+	docker compose \
+		-f infra/local/base.yaml \
+		up -d --remove-orphans
 
 infra-local-down: ## remoave local infra
-	docker compose -f ./infra/local/docker-compose.yaml down
+	docker compose \
+		-f infra/local/base.yaml \
+		down --remove-orphans
 
 ###########
 #   GCI   #

@@ -25,11 +25,19 @@ type UserService interface {
 
 //nolint:iface //for extension
 type UserRepository interface {
-	RegisterUser(ctx context.Context, userID uuid.UUID, email, username, password string) (*User, error)
+	RegisterUser(
+		ctx context.Context,
+		userID uuid.UUID,
+		email, username, password string,
+	) (*User, error)
 	AuthUser(ctx context.Context, email, password string) (*User, string, error)
 	GetUser(ctx context.Context, username string) (*User, error)
 	GetCurrentUser(ctx context.Context, userID uuid.UUID) (*User, error)
-	UpdateUser(ctx context.Context, userID uuid.UUID, username, email, password, bio, image *string) (*User, error)
+	UpdateUser(
+		ctx context.Context,
+		userID uuid.UUID,
+		username, email, password, bio, image *string,
+	) (*User, error)
 }
 
 type Profile struct {

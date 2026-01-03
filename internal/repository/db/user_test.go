@@ -1,12 +1,11 @@
 package db
 
 import (
+	"realworld/internal/domain"
 	"strconv"
 	"testing"
 
 	"github.com/google/uuid"
-
-	"realworld/internal/domain"
 )
 
 func TestRepository_RegisterUser(t *testing.T) {
@@ -54,14 +53,21 @@ func TestRepository_RegisterUser(t *testing.T) {
 
 			userID, _ := uuid.NewV7()
 
-			got, err := testrep.RegisterUser(t.Context(), userID, tt.args.username, tt.args.email, tt.args.password)
+			got, err := testrep.RegisterUser(
+				t.Context(),
+				userID,
+				tt.args.username,
+				tt.args.email,
+				tt.args.password,
+			)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.RegisterUser() error = %v, wantErr %v", err, tt.wantErr)
 
 				return
 			}
 
-			if got.Username != tt.want.Username || got.Email != tt.want.Email || got.Password != tt.want.Password {
+			if got.Username != tt.want.Username || got.Email != tt.want.Email ||
+				got.Password != tt.want.Password {
 				t.Errorf("Repository.RegisterUser() = %v, want %v", got, tt.want)
 			}
 		})
@@ -182,14 +188,25 @@ func TestRepository_UpdateUser(t *testing.T) {
 				return
 			}
 
-			got, err := testrep.UpdateUser(t.Context(), currU.ID, tt.args.username, tt.args.email, tt.args.password, tt.args.bio, tt.args.image)
+			got, err := testrep.UpdateUser(
+				t.Context(),
+				currU.ID,
+				tt.args.username,
+				tt.args.email,
+				tt.args.password,
+				tt.args.bio,
+				tt.args.image,
+			)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.UpdateUser() error = %v, wantErr %v", err, tt.wantErr)
 
 				return
 			}
 
-			if got.Username != tt.want.Username || got.Email != tt.want.Email || got.Password != tt.want.Password || got.Bio != tt.want.Bio || got.Image != tt.want.Image {
+			if got.Username != tt.want.Username || got.Email != tt.want.Email ||
+				got.Password != tt.want.Password || // pragma: allowlist secret
+				got.Bio != tt.want.Bio ||
+				got.Image != tt.want.Image {
 				t.Errorf("Repository.UpdateUser() = %v, want %v", got, tt.want)
 			}
 		})

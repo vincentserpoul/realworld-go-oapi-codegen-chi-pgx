@@ -145,7 +145,7 @@ func (r *Repository) createArticle(
 	// add tag insert to the batch
 	batch.Queue(`
 		INSERT INTO tag (id, name)
-		SELECT * FROM UNNEST(@tagIDs::uuid[], @tagNames::text[])
+		SELECT id, name FROM UNNEST(@tagIDs::uuid[], @tagNames::text[]) AS t(id, name)
 		ON CONFLICT (name) DO NOTHING`,
 		pgx.NamedArgs{
 			"tagIDs":   tagIDs,

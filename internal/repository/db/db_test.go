@@ -59,7 +59,10 @@ func TestMain(m *testing.M) {
 
 	resource.Expire(240) // Tell docker to hard kill the container within 4mn
 
-	dbURL = "postgresql://postgres@" + net.JoinHostPort(resource.GetBoundIP("5432/tcp"), resource.GetPort("5432/tcp"))
+	dbURL = "postgresql://postgres@" + net.JoinHostPort(
+		resource.GetBoundIP("5432/tcp"),
+		resource.GetPort("5432/tcp"),
+	)
 
 	if err := pool.Retry(func() error {
 		pgi, err := pginit.New(dbURL)
@@ -90,12 +93,15 @@ func TestMain(m *testing.M) {
 		log.Fatalf("could not create repo: %v", err)
 	}
 
-	goleak.VerifyTestMain(m,
+	goleak.VerifyTestMain(
+		m,
 		goleak.IgnoreTopFunction("time.Sleep"),
 		goleak.IgnoreTopFunction("io.(*pipe).write"),
 		goleak.IgnoreTopFunction("github.com/jackc/pgx/v5/pgxpool.(*Pool).backgroundHealthCheck"),
 		goleak.IgnoreTopFunction("github.com/jackc/pgx/v5/pgxpool.(*Pool).triggerHealthCheck"),
-		goleak.IgnoreTopFunction("github.com/jackc/pgx/v5/pgxpool.(*Pool).triggerHealthCheck.func1()"),
+		goleak.IgnoreTopFunction(
+			"github.com/jackc/pgx/v5/pgxpool.(*Pool).triggerHealthCheck.func1()",
+		),
 		goleak.IgnoreTopFunction("database/sql.(*DB).connectionOpener"),
 		goleak.IgnoreTopFunction("net/http.(*persistConn).roundTrip"),
 		goleak.IgnoreTopFunction("net/http.(*persistConn).writeLoop"),

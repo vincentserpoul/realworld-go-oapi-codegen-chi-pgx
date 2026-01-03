@@ -59,7 +59,15 @@ func (as *APISvc) GetFeedArticles(
 	username, tag, favorited *string,
 	limit, offset *int,
 ) ([]*Article, error) {
-	articles, err := as.repository.GetFeedArticles(ctx, userID, username, tag, favorited, limit, offset)
+	articles, err := as.repository.GetFeedArticles(
+		ctx,
+		userID,
+		username,
+		tag,
+		favorited,
+		limit,
+		offset,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get feed articles: %w", err)
 	}
@@ -103,7 +111,11 @@ func (as *APISvc) DeleteArticle(ctx context.Context, userID uuid.UUID, slug stri
 	return nil
 }
 
-func (as *APISvc) FavoriteArticle(ctx context.Context, userID uuid.UUID, slug string) (*Article, error) {
+func (as *APISvc) FavoriteArticle(
+	ctx context.Context,
+	userID uuid.UUID,
+	slug string,
+) (*Article, error) {
 	article, err := as.repository.FavoriteArticle(ctx, userID, slug)
 	if err != nil {
 		return nil, fmt.Errorf("failed to favorite article: %w", err)
@@ -112,7 +124,11 @@ func (as *APISvc) FavoriteArticle(ctx context.Context, userID uuid.UUID, slug st
 	return article, nil
 }
 
-func (as *APISvc) UnfavoriteArticle(ctx context.Context, userID uuid.UUID, slug string) (*Article, error) {
+func (as *APISvc) UnfavoriteArticle(
+	ctx context.Context,
+	userID uuid.UUID,
+	slug string,
+) (*Article, error) {
 	article, err := as.repository.UnfavoriteArticle(ctx, userID, slug)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unfavorite article: %w", err)
@@ -121,7 +137,11 @@ func (as *APISvc) UnfavoriteArticle(ctx context.Context, userID uuid.UUID, slug 
 	return article, nil
 }
 
-func (as *APISvc) RegisterUser(ctx context.Context, userID uuid.UUID, email, username, password string) (*User, error) {
+func (as *APISvc) RegisterUser(
+	ctx context.Context,
+	userID uuid.UUID,
+	email, username, password string,
+) (*User, error) {
 	user, err := as.repository.RegisterUser(ctx, userID, email, username, password)
 	if err != nil {
 		return nil, fmt.Errorf("failed to register user: %w", err)
@@ -170,7 +190,11 @@ func (as *APISvc) UpdateUser(
 	return user, nil
 }
 
-func (as *APISvc) GetProfile(ctx context.Context, userID uuid.UUID, username string) (*Profile, error) {
+func (as *APISvc) GetProfile(
+	ctx context.Context,
+	userID uuid.UUID,
+	username string,
+) (*Profile, error) {
 	profile, err := as.repository.GetProfile(ctx, userID, username)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get profile: %w", err)
@@ -179,7 +203,11 @@ func (as *APISvc) GetProfile(ctx context.Context, userID uuid.UUID, username str
 	return profile, nil
 }
 
-func (as *APISvc) FollowUser(ctx context.Context, userID uuid.UUID, followUsername string) (*Profile, error) {
+func (as *APISvc) FollowUser(
+	ctx context.Context,
+	userID uuid.UUID,
+	followUsername string,
+) (*Profile, error) {
 	profile, err := as.repository.FollowUser(ctx, userID, followUsername)
 	if err != nil {
 		return nil, fmt.Errorf("failed to follow user: %w", err)
@@ -188,7 +216,11 @@ func (as *APISvc) FollowUser(ctx context.Context, userID uuid.UUID, followUserna
 	return profile, nil
 }
 
-func (as *APISvc) UnfollowUser(ctx context.Context, userID uuid.UUID, unfollowUsername string) (*Profile, error) {
+func (as *APISvc) UnfollowUser(
+	ctx context.Context,
+	userID uuid.UUID,
+	unfollowUsername string,
+) (*Profile, error) {
 	profile, err := as.repository.UnfollowUser(ctx, userID, unfollowUsername)
 	if err != nil {
 		return nil, fmt.Errorf("failed to unfollow user: %w", err)
@@ -197,7 +229,11 @@ func (as *APISvc) UnfollowUser(ctx context.Context, userID uuid.UUID, unfollowUs
 	return profile, nil
 }
 
-func (as *APISvc) GetComments(ctx context.Context, userID uuid.UUID, slug string) ([]*Comment, error) {
+func (as *APISvc) GetComments(
+	ctx context.Context,
+	userID uuid.UUID,
+	slug string,
+) ([]*Comment, error) {
 	comments, err := as.repository.GetComments(ctx, userID, slug)
 	if err != nil {
 		return nil, fmt.Errorf("failed to get comments: %w", err)
@@ -206,7 +242,11 @@ func (as *APISvc) GetComments(ctx context.Context, userID uuid.UUID, slug string
 	return comments, nil
 }
 
-func (as *APISvc) AddComment(ctx context.Context, authorID uuid.UUID, slug, body string) (*Comment, error) {
+func (as *APISvc) AddComment(
+	ctx context.Context,
+	authorID uuid.UUID,
+	slug, body string,
+) (*Comment, error) {
 	comment, err := as.repository.AddComment(ctx, authorID, slug, body)
 	if err != nil {
 		return nil, fmt.Errorf("failed to add comment: %w", err)

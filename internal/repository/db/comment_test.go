@@ -32,7 +32,14 @@ func TestRepository_AddComment(t *testing.T) {
 	}
 
 	// save an article
-	art, errA := testrep.CreateArticle(t.Context(), usr.ID, "How to train your dragon", "Ever wonder how?", "It takes a Jacobian", []string{"dragons", "training"})
+	art, errA := testrep.CreateArticle(
+		t.Context(),
+		usr.ID,
+		"How to train your dragon",
+		"Ever wonder how?",
+		"It takes a Jacobian",
+		[]string{"dragons", "training"},
+	)
 	if errA != nil {
 		t.Errorf("could not create an article: %v", errA)
 	}
@@ -85,7 +92,8 @@ func TestRepository_AddComment(t *testing.T) {
 				return
 			}
 
-			if tt.want == nil || tt.want.Body != got.Body || tt.want.Author.Username != got.Author.Username {
+			if tt.want == nil || tt.want.Body != got.Body ||
+				tt.want.Author.Username != got.Author.Username {
 				t.Errorf("Repository.AddComment() = %v, want %v", got, tt.want)
 			}
 		})
@@ -116,7 +124,14 @@ func TestRepository_GetComments(t *testing.T) {
 	}
 
 	// save an article
-	art, errA := testrep.CreateArticle(t.Context(), usr.ID, "How to train your dragon", "Ever wonder how?", "It takes a Jacobian", []string{"dragons", "training"})
+	art, errA := testrep.CreateArticle(
+		t.Context(),
+		usr.ID,
+		"How to train your dragon",
+		"Ever wonder how?",
+		"It takes a Jacobian",
+		[]string{"dragons", "training"},
+	)
 	if errA != nil {
 		t.Errorf("could not create an article: %v", errA)
 	}

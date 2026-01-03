@@ -42,7 +42,13 @@ func TestRepository_GetProfile(t *testing.T) {
 			t.Parallel()
 
 			// register other user to follow
-			regUser, _ := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), tt.want.Username, "jakeprofile@lop.com", "122")
+			regUser, _ := testrep.RegisterUser(
+				t.Context(),
+				uuid.Must(uuid.NewV7()),
+				tt.want.Username,
+				"jakeprofile@lop.com",
+				"122",
+			)
 			testrep.UpdateUser(t.Context(), regUser.ID, nil, nil, nil, &tt.want.Bio, &tt.want.Image)
 
 			got, err := testrep.GetProfile(t.Context(), regUser.ID, tt.want.Username)
@@ -71,8 +77,20 @@ func TestRepository_FollowUser(t *testing.T) {
 		}
 	})
 
-	follower, _ := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), "jakefollow", "jakefollow@po.com", "122")
-	followee, _ := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), "jakefollowee", "jakefollowee@po.com", "122")
+	follower, _ := testrep.RegisterUser(
+		t.Context(),
+		uuid.Must(uuid.NewV7()),
+		"jakefollow",
+		"jakefollow@po.com",
+		"122",
+	)
+	followee, _ := testrep.RegisterUser(
+		t.Context(),
+		uuid.Must(uuid.NewV7()),
+		"jakefollowee",
+		"jakefollowee@po.com",
+		"122",
+	)
 
 	followeeProfile := &domain.Profile{
 		Username:  followee.Username,
@@ -135,8 +153,20 @@ func TestRepository_UnfollowUser(t *testing.T) {
 		}
 	})
 
-	follower, _ := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), "jakefollow", "jakefollow@po.com", "122")
-	followee, _ := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), "jakefollowee", "jakefollowee@po.com", "122")
+	follower, _ := testrep.RegisterUser(
+		t.Context(),
+		uuid.Must(uuid.NewV7()),
+		"jakefollow",
+		"jakefollow@po.com",
+		"122",
+	)
+	followee, _ := testrep.RegisterUser(
+		t.Context(),
+		uuid.Must(uuid.NewV7()),
+		"jakefollowee",
+		"jakefollowee@po.com",
+		"122",
+	)
 
 	tests := []struct {
 		name          string

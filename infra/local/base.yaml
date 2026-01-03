@@ -1,0 +1,49 @@
+networks:
+  realworld-go:
+    driver: bridge
+
+volumes:
+  valkey-data:
+  pg-data:
+  grafana-data:
+
+services:
+  db:
+    image: postgres:18-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: localworld # pragma: allowlist secret
+      POSTGRES_DB: realworld
+    networks:
+      - "realworld-go"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "realworld", "-U", "postgres"]
+      interval: "10s"
+      timeout: "30s"
+      retries: 5
+      start_period: "20s"
+    volumes:
+      - pg-data:/var/lib/postgresql
+
+  valkey:
+    image: valkey/valkey:9
+    ports:
+      - "6379:6379"
+    volumes:
+      - valkey-data:/data
+    networks:
+      - realworld-go
+
+  grafana:
+    image: grafana/otel-lgtm:0.13.0
+    ports:
+      - "3001:3000"
+      - "4040:4040"
+      - "4317:4317"
+      - "4318:4318"
+      - "9090:9090"
+    volumes:
+      - grafana-data:/data
+    networks:
+      - realworld-go

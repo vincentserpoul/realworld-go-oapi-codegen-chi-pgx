@@ -37,7 +37,13 @@ func TestRepository_GetTags(t *testing.T) {
 			t.Parallel()
 
 			// insert user
-			usr, errU := testrep.RegisterUser(t.Context(), uuid.Must(uuid.NewV7()), "jake", "123@po.com", "123456")
+			usr, errU := testrep.RegisterUser(
+				t.Context(),
+				uuid.Must(uuid.NewV7()),
+				"jake",
+				"123@po.com",
+				"123456",
+			)
 			if errU != nil {
 				t.Errorf("Repository.RegisterUser() error = %v", errU)
 

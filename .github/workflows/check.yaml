@@ -11,8 +11,8 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  LINTER_VERSION: "v2.0.2"
-  TRIVY_VERSION: "v0.61.0"
+  LINTER_VERSION: "v2.7.2"
+  TRIVY_VERSION: "v0.68.1"
 
 jobs:
   check-conv-commits:

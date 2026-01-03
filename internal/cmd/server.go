@@ -1,4 +1,4 @@
-package api
+package cmd
 
 import (
 	"context"
@@ -23,32 +23,39 @@ func (e ShutdownErrors) Error() string {
 		}
 	}
 
-	return "error cause: %s" + strings.Join(errStr, ";")
+	return "error cause: " + strings.Join(errStr, ";")
 }
 
 func (e ShutdownErrors) IsNil() bool {
 	return len(e) == 0
 }
 
-type Server struct {
-	cfg             *Config
+type Server[Conf BasicConfigurator] struct {
+	cfg             Conf
 	logger          *slog.Logger
 	httpMgr         *httpManager
 	shutdownHandler *shutdown.Shutdown
 }
 
 // NewServer in default, the server will serve grpc, swagger, http server
-func NewServer(
-	cfg *Config,
+func NewServer[Conf BasicConfigurator](
+	cfg Conf,
 	shutdownHandler *shutdown.Shutdown,
 	logger *slog.Logger,
-) (*Server, error) {
-	httpMgr, err := newHTTPManager(&cfg.HTTP, cfg.WithDebugProfiler)
+) (*Server[Conf], error) {
+	bConf := cfg.GetBasicConfig()
+
+	httpMgr, err := newHTTPManager(
+		cfg.GetBasicConfig().Name,
+		logger,
+		&bConf.HTTP,
+		bConf.WithDebugProfiler,
+	)
 	if err != nil {
 		return nil, fmt.Errorf("failed to create http manager: %w", err)
 	}
 
-	return &Server{
+	return &Server[Conf]{
 		cfg:             cfg,
 		logger:          logger,
 		httpMgr:         httpMgr,
@@ -65,7 +72,7 @@ type HTTPSvcRegisterer interface {
 	) error
 }
 
-func (s *Server) RegisterHTTPSvc(
+func (s *Server[Conf]) RegisterHTTPSvc(
 	route string,
 	handler http.Handler,
 	healthChecks []health.CheckConfig,
@@ -80,7 +87,7 @@ func (s *Server) RegisterHTTPSvc(
 	return nil
 }
 
-func (s *Server) Serve() error {
+func (s *Server[Conf]) Serve() error {
 	if s.httpMgr != nil {
 		shutdownHTTP := s.httpMgr.startHTTPServer(s.logger)
 
@@ -90,7 +97,7 @@ func (s *Server) Serve() error {
 	return nil
 }
 
-func (s *Server) Shutdown(ctx context.Context, signals ...os.Signal) error {
+func (s *Server[Conf]) Shutdown(ctx context.Context, signals ...os.Signal) error {
 	if err := s.shutdownHandler.Listen(ctx, signals...); err != nil {
 		return fmt.Errorf("failed to listen shutdown signals: %w", err)
 	}

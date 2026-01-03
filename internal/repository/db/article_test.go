@@ -63,12 +63,25 @@ func TestRepository_CreateArticle(t *testing.T) {
 				t.Errorf("could not generate uuid: %v", errU)
 			}
 
-			usr, errUsr := testrep.RegisterUser(t.Context(), userID, tt.args.username, tt.args.username+"@gmail.com", "")
+			usr, errUsr := testrep.RegisterUser(
+				t.Context(),
+				userID,
+				tt.args.username,
+				tt.args.username+"@gmail.com",
+				"",
+			)
 			if errUsr != nil {
 				t.Errorf("could not register user: %v", errUsr)
 			}
 
-			got, err := testrep.CreateArticle(t.Context(), usr.ID, tt.args.title, tt.args.description, tt.args.body, tt.args.tagList)
+			got, err := testrep.CreateArticle(
+				t.Context(),
+				usr.ID,
+				tt.args.title,
+				tt.args.description,
+				tt.args.body,
+				tt.args.tagList,
+			)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("Repository.CreateArticle() error = %v, wantErr %v", err, tt.wantErr)
 
@@ -134,7 +147,13 @@ func TestRepository_GetArticle(t *testing.T) {
 				t.Errorf("could not generate uuid: %v", errU)
 			}
 
-			usr, errUsr := testrep.RegisterUser(t.Context(), userID, tt.want.Author.Username, tt.want.Author.Username+"@gmail.com", "")
+			usr, errUsr := testrep.RegisterUser(
+				t.Context(),
+				userID,
+				tt.want.Author.Username,
+				tt.want.Author.Username+"@gmail.com",
+				"",
+			)
 			if errUsr != nil {
 				t.Errorf("could not register user: %v", errUsr)
 			}
@@ -145,7 +164,14 @@ func TestRepository_GetArticle(t *testing.T) {
 				tags[idx] = string(tag)
 			}
 
-			_, _ = testrep.CreateArticle(t.Context(), usr.ID, tt.want.Title, tt.want.Description, tt.want.Body, tags)
+			_, _ = testrep.CreateArticle(
+				t.Context(),
+				usr.ID,
+				tt.want.Title,
+				tt.want.Description,
+				tt.want.Body,
+				tags,
+			)
 
 			got, err := testrep.GetArticle(t.Context(), usr.ID, tt.slug)
 			if (err != nil) != tt.wantErr {
