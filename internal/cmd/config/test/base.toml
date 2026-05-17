@@ -1,0 +1,6 @@
+name = "test"
+
+version = "v0"
+with_debug_profiler = false
+
+secrets_path = "/etc/adminapi/secrets" # pragma: allowlist secret

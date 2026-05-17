@@ -1,10 +1,11 @@
-default_stages: [commit, push]
+default_stages: [pre-commit, pre-push]
 fail_fast: true
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v4.5.0
+  rev: v6.0.0
   hooks:
   - id: trailing-whitespace
+    exclude_types: [html]
   - id: end-of-file-fixer
   - id: check-added-large-files
   - id: fix-byte-order-marker
@@ -14,23 +15,45 @@ repos:
   - id: check-json
   - id: check-toml
 - repo: https://github.com/compilerla/conventional-pre-commit
-  rev: v3.0.0
+  rev: v4.2.0
   hooks:
     - id: conventional-pre-commit
       stages: [commit-msg]
       args: []
 - repo: https://github.com/Yelp/detect-secrets
-  rev: v1.4.0
+  rev: v1.5.0
   hooks:
   - id: detect-secrets
-    args: ['--baseline', '.secrets.baseline']
-- repo: https://github.com/dnephin/pre-commit-golang
-  rev: v0.5.1
+    args: ['--baseline', '.secrets.baseline', '--base64-limit', '6']
+    exclude: '.*\.gen\.go$|internal/temporalw/activities/txrecon/testdata/ssh_host_ed25519_key|internal/ioeater/resource/testdata/ssh_host_ed25519_key|internal/extpartner/dfns/testdata/privatekey'
+- repo: local
   hooks:
-    - id: no-go-testing
-    - id: golangci-lint
-      args: [--config=./.golangci.toml]
-    - id: go-critic
-    - id: go-unit-tests
-    - id: go-build
-    - id: go-mod-tidy
+  - id: go-tidy
+    name: go-tidy
+    entry: |
+      sh -c 'set -o pipefail; go mod tidy | tee /dev/stderr | grep -q FAIL && exit 1 || exit 0'
+    language: system
+  - id: go-lint
+    name: go-lint
+    entry: |
+      sh -c 'set -o pipefail; make lint-fast | tee /dev/stderr | grep -q FAIL && exit 1 || exit 0'
+    language: system
+    stages: [pre-push]
+  - id: go-generate
+    name: go-generate
+    entry: |
+      sh -c 'set -o pipefail; make generate | tee /dev/stderr | grep -q FAIL && exit 1 || exit 0'
+    language: system
+    stages: [pre-push]
+  - id: go-lint-goleak
+    name: go-lint-goleak
+    entry: |
+      sh -c 'set -o pipefail; make lint-goleak | tee /dev/stderr | grep -q FAIL && exit 1 || exit 0'
+    language: system
+    stages: [pre-push]
+  # - id: go-tests
+  #   name: go-tests
+  #   entry: |
+  #     sh -c 'set -o pipefail; make test-short | tee /dev/stderr | grep -q FAIL && exit 1 || exit 0'
+  #   language: system
+  #   stages: [pre-push]

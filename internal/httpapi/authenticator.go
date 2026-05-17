@@ -1,4 +1,4 @@
-package oapi
+package httpapi
 
 import (
 	"context"
@@ -33,12 +33,17 @@ func getTokenFromContext(ctx context.Context) string {
 }
 
 func getUserIDFromContext(ctx context.Context) uuid.UUID {
-	userIDAny, ok := writablecontext.FromContext(ctx).Get(UserIDContextKey)
-	if !ok {
+	userIDAny, isValid := writablecontext.FromContext(ctx).Get(UserIDContextKey)
+	if !isValid {
 		return uuid.Nil
 	}
 
-	userID, err := uuid.Parse(userIDAny.(string))
+	uids, isValid := userIDAny.(string)
+	if !isValid {
+		return uuid.Nil
+	}
+
+	userID, err := uuid.Parse(uids)
 	if err != nil {
 		return uuid.Nil
 	}
@@ -57,7 +62,11 @@ type ErrWrongSecSchemeError struct {
 }
 
 func (e ErrWrongSecSchemeError) Error() string {
-	return fmt.Sprintf("wrong security scheme: expected %s, found %s", e.ExpectedScheme, e.FoundScheme)
+	return fmt.Sprintf(
+		"wrong security scheme: expected %s, found %s",
+		e.ExpectedScheme,
+		e.FoundScheme,
+	)
 }
 
 // Authenticate uses the specified validator to ensure a JWT is valid, then makes
@@ -69,7 +78,10 @@ func Authenticate(
 ) error {
 	// // Our security scheme is named Token, ensure this is the case
 	if input.SecuritySchemeName != "Token" {
-		return ErrWrongSecSchemeError{ExpectedScheme: "Token", FoundScheme: input.SecuritySchemeName}
+		return ErrWrongSecSchemeError{
+			ExpectedScheme: "Token",
+			FoundScheme:    input.SecuritySchemeName,
+		}
 	}
 
 	// verifier the JWS, which will also validate the signature.

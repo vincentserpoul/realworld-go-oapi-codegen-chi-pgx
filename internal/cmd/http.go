@@ -1,4 +1,4 @@
-package api
+package cmd
 
 import (
 	"context"
@@ -11,54 +11,73 @@ import (
 	"github.com/arl/statsviz"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
-	"github.com/go-chi/httplog/v2"
+	"github.com/go-chi/httplog/v3"
 	"github.com/induzo/gocom/http/health"
-	"go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp"
-	"go.opentelemetry.io/otel"
-	semconv "go.opentelemetry.io/otel/semconv/v1.17.0"
-	"go.opentelemetry.io/otel/trace"
+	"github.com/riandyrn/otelchi"
+	otelchimetric "github.com/riandyrn/otelchi/metric"
 )
 
+type httpConfig struct {
+	Port     int `koanf:"port"`
+	Timeouts struct {
+		ReadTimeout       time.Duration `koanf:"read_timeout"`
+		ReadHeaderTimeout time.Duration `koanf:"read_header_timeout"`
+		WriteTimeout      time.Duration `koanf:"write_timeout"`
+		IdleTimeout       time.Duration `koanf:"idle_timeout"`
+	} `koanf:"timeouts"`
+	HealthEndpoint string `koanf:"health_endpoint"`
+}
+
 type httpManager struct {
-	cfg           *HTTPConfig
+	cfg           *httpConfig
 	mux           *chi.Mux
 	healthManager *health.Health
 	withDebug     bool
+	shutdownDebug func(context.Context) error
 }
 
-const healthQuietDownPeriod = 15 * time.Minute
-
-func newHTTPManager(cfg *HTTPConfig, withDebug bool) (*httpManager, error) {
+func newHTTPManager(
+	serverName string,
+	logger *slog.Logger,
+	cfg *httpConfig,
+	withDebug bool,
+) (*httpManager, error) {
 	mux := chi.NewMux()
 
-	// Logger
-	logger := &httplog.Logger{
-		Logger: slog.Default(),
-		Options: httplog.Options{
-			Concise:          true,
-			RequestHeaders:   true,
-			MessageFieldName: "message",
-			QuietDownRoutes: []string{
-				"/",
-				cfg.HealthEndpoint,
-			},
-			QuietDownPeriod: healthQuietDownPeriod,
-			SourceFieldName: "source",
+	// hLogger
+	hLoggerOptions := &httplog.Options{
+		Skip: func(req *http.Request, respStatus int) bool {
+			// skip health endpoint logging
+			if req.URL.Path == cfg.HealthEndpoint && respStatus == http.StatusOK {
+				return true
+			}
+
+			return false
 		},
 	}
 
-	mux.Use(httplog.RequestLogger(logger))
-	// add otel middleware
-	mux.Use(otelHandler)
+	baseCfg := otelchimetric.NewBaseConfig(serverName)
+	mux.Use(
+		otelchi.Middleware(serverName, otelchi.WithChiRoutes(mux)),
+		otelchimetric.NewRequestDurationMillis(baseCfg),
+		otelchimetric.NewRequestInFlight(baseCfg),
+		otelchimetric.NewResponseSizeBytes(baseCfg),
+		httplog.RequestLogger(logger, hLoggerOptions),
+	)
 
 	// add all health checks to the health endpoint
 	healthMgr := health.NewHealth()
 	mux.Method(http.MethodGet, health.HealthEndpoint, healthMgr.Handler())
 
 	// add debug endpoints if debug mode is enabled
+	shutdownDebug := func(context.Context) error { return nil }
+
 	if withDebug {
-		if err := registerHTTPDebug(mux); err != nil {
-			return nil, fmt.Errorf("failed to register http debug: %w", err)
+		var errSh error
+
+		shutdownDebug, errSh = registerHTTPDebug(mux)
+		if errSh != nil {
+			return nil, fmt.Errorf("failed to register http debug: %w", errSh)
 		}
 	}
 
@@ -67,6 +86,7 @@ func newHTTPManager(cfg *HTTPConfig, withDebug bool) (*httpManager, error) {
 		mux:           mux,
 		healthManager: healthMgr,
 		withDebug:     withDebug,
+		shutdownDebug: shutdownDebug,
 	}, nil
 }
 
@@ -75,15 +95,17 @@ func (hm *httpManager) startHTTPServer(logger *slog.Logger) func(ctx context.Con
 		Addr:              fmt.Sprintf(":%d", hm.cfg.Port),
 		ReadTimeout:       hm.cfg.Timeouts.ReadTimeout,
 		ReadHeaderTimeout: hm.cfg.Timeouts.ReadHeaderTimeout,
-		WriteTimeout:      hm.cfg.Timeouts.WriteTimeout,
-		IdleTimeout:       hm.cfg.Timeouts.IdleTimeout,
-		Handler:           hm.mux,
+		// we don't want to set this, to be able to use sse without timeout
+		// we ll use a middleware to manage timeouts on a per route basis
+		// WriteTimeout:      hm.cfg.Timeouts.WriteTimeout,
+		IdleTimeout: hm.cfg.Timeouts.IdleTimeout,
+		Handler:     hm.mux,
 	}
 
 	// Start http server
 	go func() {
 		if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
-			logger.Error(
+			logger.ErrorContext(context.Background(),
 				"http server failed to listen and serve",
 				slog.String("err", err.Error()),
 			)
@@ -91,7 +113,8 @@ func (hm *httpManager) startHTTPServer(logger *slog.Logger) func(ctx context.Con
 	}()
 
 	// serve router
-	logger.Info(
+	logger.InfoContext(
+		context.Background(),
 		"HTTP server listening",
 		slog.Int("port", hm.cfg.Port),
 		slog.String("readTimeout", hm.cfg.Timeouts.ReadTimeout.String()),
@@ -102,6 +125,11 @@ func (hm *httpManager) startHTTPServer(logger *slog.Logger) func(ctx context.Con
 	)
 
 	return func(ctx context.Context) error {
+		// shutdown debug server if enabled
+		if err := hm.shutdownDebug(ctx); err != nil {
+			logger.ErrorContext(ctx, "failed to shutdown http debug server", "err", err)
+		}
+
 		err := httpServer.Shutdown(ctx)
 		if err != nil {
 			return fmt.Errorf("http server shutdown with err: %w", err)
@@ -111,12 +139,12 @@ func (hm *httpManager) startHTTPServer(logger *slog.Logger) func(ctx context.Con
 	}
 }
 
-func registerHTTPDebug(rtr *chi.Mux) error {
+func registerHTTPDebug(rtr *chi.Mux) (func(context.Context) error, error) {
 	rtr.Mount("/debug", middleware.Profiler())
 
 	srvStatsviz, errViz := statsviz.NewServer()
 	if errViz != nil {
-		return fmt.Errorf("failed to create statsviz server: %w", errViz)
+		return nil, fmt.Errorf("failed to create statsviz server: %w", errViz)
 	}
 
 	rtr.Get("/debug/statsviz/ws", srvStatsviz.Ws())
@@ -125,7 +153,9 @@ func registerHTTPDebug(rtr *chi.Mux) error {
 	})
 	rtr.Handle("/debug/statsviz/*", srvStatsviz.Index())
 
-	return nil
+	return func(_ context.Context) error {
+		return srvStatsviz.Close()
+	}, nil
 }
 
 func (hm *httpManager) RegisterHTTPSvc(
@@ -138,25 +168,4 @@ func (hm *httpManager) RegisterHTTPSvc(
 	for _, hc := range healthChecks {
 		hm.healthManager.RegisterCheck(hc)
 	}
-}
-
-func otelHandler(h http.Handler) http.Handler {
-	return otelhttp.NewHandler(
-		http.HandlerFunc(func(resp http.ResponseWriter, req *http.Request) {
-			h.ServeHTTP(resp, req)
-
-			routePattern := chi.RouteContext(req.Context()).RoutePattern()
-
-			span := trace.SpanFromContext(req.Context())
-			span.SetName(routePattern)
-			span.SetAttributes(semconv.HTTPTarget(req.URL.String()), semconv.HTTPRoute(routePattern))
-
-			labeler, ok := otelhttp.LabelerFromContext(req.Context())
-			if ok {
-				labeler.Add(semconv.HTTPRoute(routePattern))
-			}
-		}),
-		"",
-		otelhttp.WithMeterProvider(otel.GetMeterProvider()),
-	)
 }

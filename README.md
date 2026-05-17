@@ -59,11 +59,6 @@ APIURL=http://localhost:8083 ./api/run-api-tests.sh
 ```
 
 
-## Enabling otel traces
-
-Follow the (README)[infra/local/README.md].
-
-
 ## Contributing
 
 ### Pre commit hooks

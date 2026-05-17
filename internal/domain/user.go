@@ -18,16 +18,26 @@ type User struct {
 	UpdatedAt time.Time `db:"updated_at" json:"updated_at"`
 }
 
+//nolint:iface //for extension
 type UserService interface {
 	UserRepository
 }
 
+//nolint:iface //for extension
 type UserRepository interface {
-	RegisterUser(ctx context.Context, userID uuid.UUID, email, username, password string) (*User, error)
+	RegisterUser(
+		ctx context.Context,
+		userID uuid.UUID,
+		email, username, password string,
+	) (*User, error)
 	AuthUser(ctx context.Context, email, password string) (*User, string, error)
 	GetUser(ctx context.Context, username string) (*User, error)
 	GetCurrentUser(ctx context.Context, userID uuid.UUID) (*User, error)
-	UpdateUser(ctx context.Context, userID uuid.UUID, username, email, password, bio, image *string) (*User, error)
+	UpdateUser(
+		ctx context.Context,
+		userID uuid.UUID,
+		username, email, password, bio, image *string,
+	) (*User, error)
 }
 
 type Profile struct {
@@ -37,10 +47,12 @@ type Profile struct {
 	Following bool   `db:"following" json:"following"`
 }
 
+//nolint:iface //for extension
 type ProfileService interface {
 	ProfileRepository
 }
 
+//nolint:iface //for extension
 type ProfileRepository interface {
 	GetProfile(ctx context.Context, userID uuid.UUID, username string) (*Profile, error)
 	FollowUser(ctx context.Context, userID uuid.UUID, followUsername string) (*Profile, error)

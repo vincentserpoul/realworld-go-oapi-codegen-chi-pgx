@@ -1,4 +1,4 @@
-package: oapigen
+package: httpapi
 generate:
   models: true
 output: ./types.gen.go

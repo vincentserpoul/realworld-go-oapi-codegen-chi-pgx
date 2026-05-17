@@ -10,10 +10,12 @@ import (
 
 type Tag string
 
+//nolint:iface //for extension
 type TagService interface {
 	GetTags(ctx context.Context) ([]Tag, error)
 }
 
+//nolint:iface //for extension
 type TagRepository interface {
 	GetTags(ctx context.Context) ([]Tag, error)
 }
@@ -36,10 +38,12 @@ func GetSlugFromTitle(title string) string {
 	return slug.Make(title)
 }
 
+//nolint:iface //for extension
 type ArticleService interface {
 	ArticleRepository
 }
 
+//nolint:iface //for extension
 type ArticleRepository interface {
 	GetArticles(
 		ctx context.Context,
@@ -60,7 +64,12 @@ type ArticleRepository interface {
 		title, description, body string,
 		tagList []string,
 	) (*Article, error)
-	UpdateArticle(ctx context.Context, userID uuid.UUID, slug string, title, description, body *string) (*Article, error)
+	UpdateArticle(
+		ctx context.Context,
+		userID uuid.UUID,
+		slug string,
+		title, description, body *string,
+	) (*Article, error)
 	DeleteArticle(ctx context.Context, userID uuid.UUID, slug string) error
 	FavoriteArticle(ctx context.Context, userID uuid.UUID, slug string) (*Article, error)
 	UnfavoriteArticle(ctx context.Context, userID uuid.UUID, slug string) (*Article, error)

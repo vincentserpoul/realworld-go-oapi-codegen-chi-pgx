@@ -15,10 +15,12 @@ type Comment struct {
 	Author    Profile   `db:"author" json:"author"`
 }
 
+//nolint:iface //for extension
 type CommentService interface {
 	CommentRepository
 }
 
+//nolint:iface //for extension
 type CommentRepository interface {
 	GetComments(ctx context.Context, userID uuid.UUID, slug string) ([]*Comment, error)
 	AddComment(ctx context.Context, authorID uuid.UUID, slug, body string) (*Comment, error)

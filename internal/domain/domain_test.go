@@ -10,10 +10,16 @@ import (
 
 func TestMain(m *testing.M) {
 	leak := flag.Bool("leak", false, "use leak detector")
+
 	flag.Parse()
 
 	if *leak {
-		goleak.VerifyTestMain(m, goleak.IgnoreAnyFunction("github.com/testcontainers/testcontainers-go.(*Reaper).Connect.func1"))
+		goleak.VerifyTestMain(
+			m,
+			goleak.IgnoreAnyFunction(
+				"github.com/testcontainers/testcontainers-go.(*Reaper).Connect.func1",
+			),
+		)
 
 		return
 	}
