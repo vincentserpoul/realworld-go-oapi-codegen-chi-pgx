@@ -17,7 +17,7 @@ import { crypto } from "k6/experimental/webcrypto";
 // const articleTitle = ;
 // let createdArticle;
 
-const BASE_URL = "http://localhost:8083";
+const BASE_URL = "https://realworld-sgp.onrender.com";
 // Sleep duration between successive requests.
 // You might want to edit the value of this variable or remove calls to the sleep function on the script.
 const SLEEP_DURATION = 0.1;
